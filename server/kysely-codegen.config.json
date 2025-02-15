@@ -1,0 +1,6 @@
+{
+  "dialect": "sqlite",
+  "connection": {
+    "filename": "database.sqlite"
+  }
+}

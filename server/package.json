@@ -1,0 +1,38 @@
+{
+  "name": "veebiprogramerimine-projekt-be",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsx watch ./src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "tsx": "tsx",
+    "db:schema": "kysely-codegen --dialect sqlite --out-file ./src/db/schema.d.ts",
+    "db:migrate": "tsx ./src/db/migrate.ts && npm run db:schema"
+  },
+  "keywords": [],
+  "author": "Erik Schults",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@fastify/swagger": "^9.4.2",
+    "@fastify/swagger-ui": "^5.2.1",
+    "@trpc/server": "^11.0.0-rc.768",
+    "better-sqlite3": "^11.8.1",
+    "dotenv": "^16.4.7",
+    "fastify": "^5.2.1",
+    "kysely": "^0.27.5",
+    "lib": "file:../lib",
+    "prettier": "^3.5.1",
+    "trpc-to-openapi": "^2.1.3",
+    "zod": "^3.24.2",
+    "zod-openapi": "^4.2.3"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.13.4",
+    "kysely-codegen": "^0.17.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
