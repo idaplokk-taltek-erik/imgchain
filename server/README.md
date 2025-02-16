@@ -6,11 +6,13 @@ The goal is to test out how different technologies work. Would like to find a wa
 
 The API layer leverages (tRPC)[https://trpc.io/docs/] to seamlessly synchronize API definitions between the client and server (is promising), eliminating the need for manual duplication of code.
 
+I tried to setup protobuf/grpc, but somehow the tooling is not great. The proto definition and typescript schema library zod are not tightly coupled, change in one is not automatically reflected in the other. `protoc` needs to be a global package?
+
 I tried adding openapi docs generated directly from the trpc schema. It was quite painful, I went through several libraries like zod-to-openapi (deprecated), trpc-openapi (deprecated), now trpc-to-openapi (have to descibe openapi manually by adding some meta with REST endpoints, also fails to start randomly after some other dep install). In the end I went with `zod-openapi` and creatad a script that goes through the tRPC definitions and adds them to the OpenAPI spec manually. And then I found package trpc-ui, wasted 1h at least. But using some guys library always feels wrong.
 
-The client code can simply import the definitions for server directory without problems.
+The client code can simply import the definitions for server directory without problems. In general spent lots of time just getting it to work - some version mismatches, does not support react 19. I had the impression that one TS project cannot import directly from another TS project, so I was trying to generate some shared library types. This seems not to be the case, the tRCP.AppRouter can easily be imported to the client even if the server and client live in separate spaces.
 
-I tried to setup protobuf/grpc, but somehow the tooling is not great. The proto definition and typescript schema library zod are not tightly coupled, change in one is not automatically reflected in the other. `protoc` needs to be a global package?
+Also GPT outputs broken code and steps.
 
 ## Starting the server
 
