@@ -3,8 +3,6 @@ import { publicProcedure } from '../../api_trpc/trpc';
 import { createUser } from '../../models/user_modal';
 
 export const createUserHandler = publicProcedure
-  .meta({ openapi: { method: 'POST', path: '/user' } })
-
   .input(createUserInput)
   .output(user)
 

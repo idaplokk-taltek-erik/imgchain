@@ -1,5 +1,8 @@
 import fastify from 'fastify';
 import { registerTRPCRoutes } from './api_trpc/configure_fastify';
+import { z } from 'zod';
+import { extendZodWithOpenApi } from 'zod-openapi';
+extendZodWithOpenApi(z);
 
 const server = fastify({
   maxParamLength: 5000,
