@@ -1,7 +1,7 @@
 import { Insertable, Selectable } from 'kysely';
-import { User } from 'lib';
 import { db } from '../db/db';
 import { DB } from '../db/schema';
+import { User } from '../schema/user';
 
 export async function createUser({
   email,

@@ -1,6 +1,6 @@
-import { createUserInput, user } from 'lib';
 import { publicProcedure } from '../../api_trpc/trpc';
 import { createUser } from '../../models/user_modal';
+import { createUserInput, user } from '../../schema/user';
 
 export const createUserHandler = publicProcedure
   .input(createUserInput)

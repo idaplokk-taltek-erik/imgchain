@@ -12,6 +12,5 @@ export const createUserInput = z.object({
   password_hash: z.string(),
 });
 
-
 export type User = z.infer<typeof user>;
 export type CreateUserInput = z.infer<typeof createUserInput>;

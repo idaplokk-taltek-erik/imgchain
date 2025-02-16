@@ -5,10 +5,14 @@
   "scripts": {
     "start": "tsx watch ./src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc -declaration",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "tsx": "tsx",
     "db:schema": "kysely-codegen --dialect sqlite --out-file ./src/db/schema.d.ts",
-    "db:migrate": "tsx ./src/db/migrate.ts && npm run db:schema"
+    "db:migrate": "tsx ./src/db/migrate.ts && npm run db:schema",
+    "codegen": "npm run build && npm run trpc:copy && npm run zod:copy",
+    "zod:copy": "rsync -avm --include='*' --include='*/' --exclude='*' ./dist/schema/ ../client/src/types/",
+    "trpc:copy": "rsync -avm --include='router.*' --include='*/' --exclude='*' ./dist/api_trpc/ ../client/src/types/"
   },
   "keywords": [],
   "author": "Erik Schults",
@@ -32,7 +36,9 @@
     "@types/better-sqlite3": "^7.6.12",
     "@types/node": "^22.13.4",
     "kysely-codegen": "^0.17.0",
+    "rsync": "^0.6.1",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "zod-to-ts": "^1.2.0"
   }
 }
