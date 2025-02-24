@@ -1,7 +1,7 @@
+import { Button, Flex, Heading, Text } from '@radix-ui/themes';
 import { createFileRoute } from '@tanstack/react-router';
-import reactLogo from '../assets/react.svg';
-import { Greeting } from '../components/greeting';
-import viteLogo from '/vite.svg';
+import BoxedContainer from '../components/boxed_container';
+import LoginDialog from '../components/login_register';
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -9,25 +9,43 @@ export const Route = createFileRoute('/')({
 
 function Index() {
   return (
-    <div>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-      <Greeting />
-    </div>
+    <Flex
+      direction="column"
+      gapY="4"
+      justify="center"
+      style={{ height: '70vh' }}
+    >
+      <BoxedContainer size="3">
+        <Flex direction="column" gapY="0">
+          <Heading
+            size={{
+              initial: '8',
+              lg: '9',
+            }}
+          >
+            Welcome to MaterialCalc
+          </Heading>
+          <Text weight="light" mt="2">
+            Our website offers fast calculations for materials needed for
+            building floors and walls. Choose your wall type, specify dimensions
+            and gaps between timber posts, and instantly receive a 3D browsable
+            image along with a detailed material table.
+          </Text>
+        </Flex>
+      </BoxedContainer>
+      <BoxedContainer size="3">
+        <Flex gap="4" justify="end">
+          <LoginDialog
+            trigger={
+              <Button variant="soft" size="3">
+                Login / Register
+              </Button>
+            }
+          />
+        </Flex>
+      </BoxedContainer>
+    </Flex>
   );
 }
+
+export default Index;

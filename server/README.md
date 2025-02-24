@@ -12,7 +12,7 @@ I tried adding openapi docs generated directly from the trpc schema. It was quit
 
 The client code can simply import the definitions for server directory without problems. In general spent lots of time just getting it to work - some version mismatches, does not support react 19. I had the impression that one TS project cannot import directly from another TS project, so I was trying to generate some shared library types. This seems not to be the case, the tRCP.AppRouter can easily be imported to the client even if the server and client live in separate spaces.
 
-Also GPT outputs broken code and steps.
+Also GPT outputs broken code and steps, it is not so smart in tRPC + tanstack.
 
 ## Starting the server
 
