@@ -17,7 +17,7 @@ import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 export const Route = createRootRoute({
   component: () => (
     <>
-      <Theme appearance="dark" accentColor="gold" scaling="105%" radius="small">
+      <Theme className='bg-texture' appearance="light" accentColor="gold" scaling="105%" radius="small">
         <Outlet />
       </Theme>
       <TanStackRouterDevtools />

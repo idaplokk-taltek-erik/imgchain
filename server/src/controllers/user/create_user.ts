@@ -1,16 +1,26 @@
+import { z } from 'zod';
 import { publicProcedure } from '../../api_trpc/trpc';
-import { createUser } from '../../models/user_modal';
-import { createUserInput, user } from '../../schema/user';
+import { createUser, getUserByEmail } from '../../models/user_modal';
+import { fieldError } from '../../schema/error';
+import { createUserInput } from '../../schema/user';
 
 export const createUserHandler = publicProcedure
   .input(createUserInput)
-  .output(user)
+  .output(z.array(fieldError))
 
   .mutation(async ({ input }) => {
-    const newUser = await createUser(input);
-    if (!newUser) {
-      throw new Error('Failed to create user!');
+    const existingUser = await getUserByEmail(input.email);
+
+
+    if (existingUser && existingUser.password_hash !== input.password_hash) {
+      return [{ field: 'password', message: 'Invalid password!' }];
     }
 
-    return newUser;
+    const newUser = await createUser(input);
+
+    if (!newUser) {
+      return [{ field: 'email', message: 'Email already in use!' }];
+    }
+
+    return [];
   });

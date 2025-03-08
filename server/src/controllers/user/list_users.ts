@@ -10,15 +10,5 @@ export const listUsersHandler = publicProcedure
   .query(async () => {
     const users = await getUsers();
 
-    users.push({
-      id: 1,
-      email: 'asd@mail.com',
-      created_at: new Date(),
-      updated_at: new Date(),
-    });
-
-    console.log(JSON.stringify(users));
-
-
     return users;
   });

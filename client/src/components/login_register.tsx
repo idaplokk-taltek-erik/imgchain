@@ -1,20 +1,44 @@
 import { ArrowRightIcon, Cross2Icon } from '@radix-ui/react-icons';
 import { Button, Dialog, Flex, Text } from '@radix-ui/themes';
+import { useMutation } from '@tanstack/react-query';
 import { Form } from 'radix-ui';
-import { ReactNode, useState } from 'react';
-
-async function submitForm(data: unknown) {
-  console.log(data);
-}
+import { ReactNode, useCallback, useState } from 'react';
+import { useTRPC } from '../lib/trpc';
 
 const LoginDialog = ({ trigger }: { trigger: ReactNode }) => {
-  const [serverErrors, setServerErrors] = useState({
-    email: false,
-    password: false,
-  });
+  const trpc = useTRPC();
+  const userCreator = useMutation(trpc.user.create.mutationOptions());
+  const [serverError, setServerError] = useState({} as Record<string, string>);
+
+  const submitForm = useCallback(
+    (data: { [k: string]: FormDataEntryValue }) => {
+      console.log('data2', data);
+      userCreator
+        .mutateAsync({
+          email: data.email as string,
+          password_hash: data.password as string,
+        })
+        .then((data) => {
+          if (data.length) {
+            setServerError(
+              Object.fromEntries(
+                data.map(({ field, message }) => [field, message]),
+              ),
+            );
+          } else {
+            console.log('TODO login successful')
+          }
+        })
+        .catch((err) => {
+          console.log(err.message);
+          setServerError(err.message);
+        });
+    },
+    [userCreator],
+  );
 
   return (
-    <Dialog.Root>
+    <Dialog.Root onOpenChange={() => setServerError({})}>
       <Dialog.Trigger>{trigger}</Dialog.Trigger>
 
       <Dialog.Content maxWidth="450px">
@@ -34,24 +58,18 @@ const LoginDialog = ({ trigger }: { trigger: ReactNode }) => {
           onSubmit={(event) => {
             const data = Object.fromEntries(new FormData(event.currentTarget));
 
-            submitForm(data)
-              .then(() => {})
-              /**
-               * Map errors from your server response into a structure you'd like to work with.
-               * In this case resulting in this object: `{ email: false, password: true }`
-               */
-              // .catch((errors) => setServerErrors(mapServerErrors(errors)));
-              .catch((errors) => setServerErrors(errors));
+            console.log('data');
+            console.log(data);
+
+            submitForm(data);
 
             // prevent default form submission
             event.preventDefault();
           }}
-          onClearServerErrors={() =>
-            setServerErrors({ email: false, password: false })
-          }
+          onClearServerErrors={() => setServerError({})}
         >
           <Flex direction="column" gap="3">
-            <Form.Field asChild name="email" serverInvalid={serverErrors.email}>
+            <Form.Field asChild name="email" serverInvalid={!!serverError.email}>
               <Flex direction="column" gap="1">
                 <Form.Label asChild>
                   <Text size="1" weight="bold">
@@ -67,20 +85,16 @@ const LoginDialog = ({ trigger }: { trigger: ReactNode }) => {
                 <Form.Message
                   asChild
                   match="typeMismatch"
-                  forceMatch={serverErrors.email}
+                  forceMatch={!!serverError.email}
                 >
                   <Text size="1" color="amber">
-                    Please provide a valid email.
+                    {serverError.email}
                   </Text>
                 </Form.Message>
               </Flex>
             </Form.Field>
 
-            <Form.Field
-              name="password"
-              asChild
-              serverInvalid={serverErrors.password}
-            >
+            <Form.Field name="password" asChild>
               <Flex direction="column" gap="1">
                 <Form.Label asChild>
                   <Text size="1" weight="bold">
@@ -93,13 +107,16 @@ const LoginDialog = ({ trigger }: { trigger: ReactNode }) => {
                     Please enter a password.
                   </Text>
                 </Form.Message>
-                {serverErrors.password && (
-                  <Form.Message asChild>
-                    <Text size="1" color="amber">
-                      Please provide a valid email.
-                    </Text>
-                  </Form.Message>
-                )}
+
+                <Form.Message
+                  asChild
+                  match="typeMismatch"
+                  forceMatch={!!serverError.password}
+                >
+                  <Text size="1" color="amber">
+                    {serverError.password}
+                  </Text>
+                </Form.Message>
               </Flex>
             </Form.Field>
             <Flex justify="end">

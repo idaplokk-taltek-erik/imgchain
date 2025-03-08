@@ -14,6 +14,7 @@ export async function createUser({
       password_hash,
     })
     .returningAll()
+    .onConflict((oc) => oc.column('email').doNothing())
     .executeTakeFirst();
 
   if (!result) {
@@ -25,7 +26,18 @@ export async function createUser({
 
 export async function getUsers(): Promise<User[]> {
   const users = await db.selectFrom('user').selectAll().execute();
+
   return users.map(parseDates);
+}
+
+export async function getUserByEmail(email: string): Promise<User | null> {
+  const user = await db
+    .selectFrom('user')
+    .where('email', '==', email)
+    .selectAll()
+    .executeTakeFirst();
+
+  return user ? parseDates(user) : null;
 }
 
 function parseDates(user: Selectable<DB['user']>): User {
