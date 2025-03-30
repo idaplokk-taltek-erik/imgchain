@@ -1,5 +1,6 @@
-import { Theme } from '@radix-ui/themes';
-import { createRootRoute, Outlet } from '@tanstack/react-router';
+import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
+import { TanStackRouterDevtools } from '@tanstack/router-devtools';
+import { User } from '../../../server/src/schema/user';
 // import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
 /**
    <div className="p-2 flex gap-2">
@@ -12,14 +13,15 @@ import { createRootRoute, Outlet } from '@tanstack/react-router';
       </div>
       <hr />
  */
-import { TanStackRouterDevtools } from '@tanstack/router-devtools';
+export interface MyRouterContext {
+  // The ReturnType of your useAuth hook or the value of your AuthContext
+  user: User;
+}
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: () => (
     <>
-      <Theme className='bg-texture' appearance="light" accentColor="gold" scaling="105%" radius="small">
-        <Outlet />
-      </Theme>
+      <Outlet />
       <TanStackRouterDevtools />
     </>
   ),

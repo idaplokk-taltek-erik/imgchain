@@ -1,6 +1,5 @@
 import { initTRPC, TRPCError } from '@trpc/server';
 import { RequestContext } from './context';
-import { User } from '../db/schema';
 
 const t = initTRPC.context<RequestContext>().create();
 
@@ -11,7 +10,7 @@ export const protectedProcedure = t.procedure.use(
     const { ctx } = opts;
 
     // `ctx.user` is nullable
-    if (!ctx.user) {
+    if (!ctx.user || !ctx.session || ctx.session.expiresAt < new Date()) {
       throw new TRPCError({ code: 'UNAUTHORIZED' });
     }
 
@@ -19,7 +18,7 @@ export const protectedProcedure = t.procedure.use(
       ctx: {
         // ✅ user value is known to be non-null now
         user: ctx.user,
-        // ^?
+        session: ctx.session,
       },
     });
   },

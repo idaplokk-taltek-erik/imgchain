@@ -2,7 +2,9 @@ require('dotenv').config();
 import 'zod-openapi/extend';
 
 import fastify from 'fastify';
-import { registerTRPCRoutes } from './api_trpc/configure_fastify';
+import { registerTRPCRoutes } from './lib/trpc/trpc_fastify';
+import { betterAuthFastify } from './lib/auth/better_auth_fastify';
+import { registerOpenApi } from './lib/api_docs/openapi_fastify';
 
 const server = fastify({
   maxParamLength: 5000,
@@ -11,7 +13,9 @@ const server = fastify({
 
 (async () => {
   try {
+    server.register(betterAuthFastify);
     await registerTRPCRoutes(server);
+    registerOpenApi(server);
 
     await server.listen({ port: 3000 });
 

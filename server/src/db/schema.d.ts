@@ -3,20 +3,55 @@
  * Please do not edit it manually.
  */
 
-import type { ColumnType } from "kysely";
+export interface Account {
+  accessToken: string | null;
+  accessTokenExpiresAt: string | null;
+  accountId: string;
+  createdAt: string;
+  id: string;
+  idToken: string | null;
+  password: string | null;
+  providerId: string;
+  refreshToken: string | null;
+  refreshTokenExpiresAt: string | null;
+  scope: string | null;
+  updatedAt: string;
+  userId: string;
+}
 
-export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
-  ? ColumnType<S, I | undefined, U>
-  : ColumnType<T, T | undefined, T>;
+export interface Session {
+  createdAt: string;
+  expiresAt: string;
+  id: string;
+  ipAddress: string | null;
+  token: string;
+  updatedAt: string;
+  userAgent: string | null;
+  userId: string;
+}
 
 export interface User {
-  created_at: Generated<string>;
+  createdAt: string;
   email: string;
-  id: Generated<number>;
-  password_hash: string;
-  updated_at: Generated<string>;
+  emailVerified: number;
+  id: string;
+  image: string | null;
+  name: string;
+  updatedAt: string;
+}
+
+export interface Verification {
+  createdAt: string | null;
+  expiresAt: string;
+  id: string;
+  identifier: string;
+  updatedAt: string | null;
+  value: string;
 }
 
 export interface DB {
+  account: Account;
+  session: Session;
   user: User;
+  verification: Verification;
 }
