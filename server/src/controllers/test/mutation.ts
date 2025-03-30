@@ -5,7 +5,7 @@ export const testMutationHandler = protectedProcedure
   .input(z.void().optional)
   .output(z.object({ success: z.boolean() }))
 
-  .query(async ({ ctx }) => {
+  .mutation(async ({ ctx }) => {
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     return {
