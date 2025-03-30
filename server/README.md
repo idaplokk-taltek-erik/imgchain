@@ -1,10 +1,12 @@
 # Veebiprogrammeerimine: Server
 
-## API
-
+<details>
+<summary>
+API design
+</summary>
 The goal is to test out how different technologies work. Would like to find a way which allows types for the API interface to defined in one place and the server + consumers can write the programs for that interface.
 
-The API layer leverages (tRPC)[https://trpc.io/docs/] to seamlessly synchronize API definitions between the client and server (is promising), eliminating the need for manual duplication of code.
+The API layer leverages (tRPC)[https://trpc.io/docs/] to seamlessly synchronize API definitions between the client and server (is promising), eliminating the need for manual duplication (request/response interfacing both on BE and FE) of code.
 
 I tried to setup protobuf/grpc, but somehow the tooling is not great. The proto definition and typescript schema library zod are not tightly coupled, change in one is not automatically reflected in the other. `protoc` needs to be a global package?
 
@@ -13,6 +15,8 @@ I tried adding openapi docs generated directly from the trpc schema. It was quit
 The client code can simply import the definitions for server directory without problems. In general spent lots of time just getting it to work - some version mismatches, does not support react 19. I had the impression that one TS project cannot import directly from another TS project, so I was trying to generate some shared library types. This seems not to be the case, the tRCP.AppRouter can easily be imported to the client even if the server and client live in separate spaces.
 
 Also GPT outputs broken code and steps, it is not so smart in tRPC + tanstack.
+
+</details>
 
 ## Starting the server
 
