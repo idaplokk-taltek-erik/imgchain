@@ -2,27 +2,20 @@ import { RouterProvider } from '@tanstack/react-router';
 import './App.css';
 
 import { router } from './lib/router';
+import { ThemeProvider } from './lib/theme/provider';
 import { TrpcProvider } from './lib/trpc_provider';
-import { useUser } from './lib/user/helpers';
-import { UserProvider } from './lib/user/provider';
 
 function InnerApp() {
-  const user = useUser();
-
-  if (user.loading) {
-    return 'Loading...'
-  }
-
-  return <RouterProvider router={router} context={{ user }} />;
+  return <RouterProvider router={router} />;
 }
 
 export function App() {
   return (
-    <TrpcProvider>
-      <UserProvider>
+    <ThemeProvider>
+      <TrpcProvider>
         <InnerApp />
-      </UserProvider>
-    </TrpcProvider>
+      </TrpcProvider>
+    </ThemeProvider>
   );
 }
 

@@ -1,6 +1,7 @@
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
-import { User } from '../../../server/src/schema/user';
+import { LoginModal } from '../components/login_modal';
+import AppLayout from '../components/layout';
 // import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
 /**
    <div className="p-2 flex gap-2">
@@ -13,16 +14,18 @@ import { User } from '../../../server/src/schema/user';
       </div>
       <hr />
  */
-export interface MyRouterContext {
-  // The ReturnType of your useAuth hook or the value of your AuthContext
-  user: User;
-}
+export interface MyRouterContext {}
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
-  component: () => (
-    <>
-      <Outlet />
-      <TanStackRouterDevtools />
-    </>
-  ),
+  component: RootRoute,
 });
+
+function RootRoute() {
+  return (
+    <AppLayout>
+      <Outlet />
+      <LoginModal />
+      <TanStackRouterDevtools />
+    </AppLayout>
+  );
+}

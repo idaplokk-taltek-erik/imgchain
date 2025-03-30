@@ -5,9 +5,11 @@ import BetterSqlite3 from 'better-sqlite3';
 export const betterAuth = betterAuthLib({
   database: new BetterSqlite3('database.sqlite'),
   plugins: [openAPI()],
+  trustedOrigins: ['http://localhost:3000', 'http://localhost:4000'],
   emailAndPassword: {
     enabled: true,
     sendEmailVerificationOnSignUp: true,
+    minPasswordLength: 1,
     async sendVerificationEmail() {
       console.log('Send email to verify email address');
     },
