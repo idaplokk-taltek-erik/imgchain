@@ -22,8 +22,6 @@ To test the API navigate to authentication swagger docs
   Use `/get-session` to see how the authenticated user/session looks like.
 - Go to [localhost:3000/docs](http://localhost:3000/docs), and test out the application specific methods/routes. The API endpoints specified in there are behind authentication, so logged out users cannot access them.
 
-In order to request `user.list` the user has to the authenticated. Just perform the `auth.login` request with default data provided by swagger to test it out. Otherwise create a new user with `auth.register`.
-
 Read more at [server/README.md](./server/README.md).
 
 ## Starting the UI
