@@ -3,10 +3,10 @@ import { db } from '../db/db';
 import { DB } from '../db/schema';
 import { User } from '../schema/user';
 
-export async function createUser({
+export async function insertUser({
   email,
   password_hash,
-}: Insertable<DB['user']>): Promise<User | undefined> {
+}: Insertable<DB['user']>): Promise<User> {
   const result = await db
     .insertInto('user')
     .values({
@@ -18,32 +18,42 @@ export async function createUser({
     .executeTakeFirst();
 
   if (!result) {
-    return result;
+    throw new Error('Failed to insert user');
   }
 
-  return parseDates(result);
+  return parsePublicUser(result);
 }
 
 export async function getUsers(): Promise<User[]> {
   const users = await db.selectFrom('user').selectAll().execute();
 
-  return users.map(parseDates);
+  return users.map(parsePublicUser);
+}
+
+export async function getUserByID(id: number): Promise<User | null> {
+  const user = await db
+    .selectFrom('user')
+    .where('id', '=', id)
+    .selectAll()
+    .executeTakeFirst();
+
+  return user ? parsePublicUser(user) : null;
 }
 
 export async function getUserByEmail(email: string): Promise<User | null> {
   const user = await db
     .selectFrom('user')
-    .where('email', '==', email)
+    .where('email', '=', email)
     .selectAll()
     .executeTakeFirst();
 
-  return user ? parseDates(user) : null;
+  return user ? parsePublicUser(user) : null;
 }
 
-function parseDates(user: Selectable<DB['user']>): User {
+function parsePublicUser(user: Selectable<DB['user']>): User {
   return {
-    ...user,
     id: user.id,
+    email: user.email,
     created_at: new Date(user.created_at),
     updated_at: new Date(user.updated_at),
   };

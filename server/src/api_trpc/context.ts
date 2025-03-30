@@ -1,7 +1,11 @@
 import { CreateFastifyContextOptions } from '@trpc/server/adapters/fastify';
+import { decodeSessionCookie } from '../lib/auth';
 
-export function createRequestContext({ req, res }: CreateFastifyContextOptions) {
-  const user = { name: req.headers.username ?? 'anonymous' };
+export async function createRequestContext({
+  req,
+  res,
+}: CreateFastifyContextOptions) {
+  const { user } = await decodeSessionCookie(req)
   return { req, res, user };
 }
 

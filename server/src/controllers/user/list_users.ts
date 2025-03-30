@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { publicProcedure } from '../../api_trpc/trpc';
+import { protectedProcedure } from '../../api_trpc/trpc';
 import { getUsers } from '../../models/user_modal';
 import { user } from '../../schema/user';
 
-export const listUsersHandler = publicProcedure
-  .input(z.undefined())
+export const listUsersHandler = protectedProcedure
+  .input(z.undefined().optional)
   .output(z.array(user))
 
   .query(async () => {
