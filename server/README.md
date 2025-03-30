@@ -16,6 +16,8 @@ The client code can simply import the definitions for server directory without p
 
 Also GPT outputs broken code and steps, it is not so smart in tRPC + tanstack.
 
+At first I started to implement simple session-cookie authentication with JWT. But then I figured that it should be such common practise and started to use [better-auth](https://better-auth.vercel.app/docs/basic-usage). Had to glue it together with fastify. Otherwise pretty nice, can have out-of-the-box user/password registartion and login. Also it has capabilities to support google auth.
+
 </details>
 
 ## Starting the server
