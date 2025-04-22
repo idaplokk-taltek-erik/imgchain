@@ -15,6 +15,6 @@ export const MediaProof = MediaProofBase.extend({
   mime_type: z.string().or(z.null()),
   solana_signer: z.string(),
   solana_txid: z.string().or(z.null()),
-
+  image_url: z.string().or(z.null()),
 })
 export type MediaProof = z.infer<typeof MediaProof>;
