@@ -3,8 +3,7 @@ import { db } from '../../db/db';
 import { protectedProcedure } from '../../lib/trpc/trpc';
 import { MediaProofBase } from '../../schema/media_proof';
 import { ulid } from 'ulid';
-
-const solanaSignerPublicKey = 'asdf';
+import { env } from '../../lib/env';
 
 export const addMediaProofHandler = protectedProcedure
   .input(MediaProofBase)
@@ -17,7 +16,7 @@ export const addMediaProofHandler = protectedProcedure
         ...input,
         id: ulid(),
         author_id: ctx.user.id,
-        solana_signer: solanaSignerPublicKey,
+        solana_signer: env.SOLANA_SIGNER_PUBLIC_KEY,
       })
       .execute();
 
