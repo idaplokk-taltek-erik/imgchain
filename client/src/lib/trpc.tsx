@@ -1,5 +1,12 @@
-import { createTRPCContext } from '@trpc/tanstack-react-query';
 import { AppRouter } from '../../../server/src/trpc_router';
 
-export const { TRPCProvider, useTRPC } = createTRPCContext<AppRouter>();
+import { createTRPCClient, httpBatchLink } from '@trpc/client';
 
+// @ts-expect-error oops trpcs
+export const trpc = createTRPCClient<AppRouter>({
+  links: [
+    httpBatchLink({
+      url: 'http://localhost:4000/trpc',
+    }),
+  ],
+});

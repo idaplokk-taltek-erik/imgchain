@@ -12,7 +12,9 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
+import { Route as UploadTestIndexImport } from './routes/upload-test/index'
 import { Route as ProfileIndexImport } from './routes/profile/index'
+import { Route as SendHashImport } from './routes/send.$hash'
 
 // Create/Update Routes
 
@@ -22,9 +24,21 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const UploadTestIndexRoute = UploadTestIndexImport.update({
+  id: '/upload-test/',
+  path: '/upload-test/',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const ProfileIndexRoute = ProfileIndexImport.update({
   id: '/profile/',
   path: '/profile/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const SendHashRoute = SendHashImport.update({
+  id: '/send/$hash',
+  path: '/send/$hash',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -39,11 +53,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/send/$hash': {
+      id: '/send/$hash'
+      path: '/send/$hash'
+      fullPath: '/send/$hash'
+      preLoaderRoute: typeof SendHashImport
+      parentRoute: typeof rootRoute
+    }
     '/profile/': {
       id: '/profile/'
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/upload-test/': {
+      id: '/upload-test/'
+      path: '/upload-test'
+      fullPath: '/upload-test'
+      preLoaderRoute: typeof UploadTestIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -53,37 +81,47 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/send/$hash': typeof SendHashRoute
   '/profile': typeof ProfileIndexRoute
+  '/upload-test': typeof UploadTestIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/send/$hash': typeof SendHashRoute
   '/profile': typeof ProfileIndexRoute
+  '/upload-test': typeof UploadTestIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/send/$hash': typeof SendHashRoute
   '/profile/': typeof ProfileIndexRoute
+  '/upload-test/': typeof UploadTestIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/profile'
+  fullPaths: '/' | '/send/$hash' | '/profile' | '/upload-test'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/profile'
-  id: '__root__' | '/' | '/profile/'
+  to: '/' | '/send/$hash' | '/profile' | '/upload-test'
+  id: '__root__' | '/' | '/send/$hash' | '/profile/' | '/upload-test/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SendHashRoute: typeof SendHashRoute
   ProfileIndexRoute: typeof ProfileIndexRoute
+  UploadTestIndexRoute: typeof UploadTestIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SendHashRoute: SendHashRoute,
   ProfileIndexRoute: ProfileIndexRoute,
+  UploadTestIndexRoute: UploadTestIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,14 +135,22 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/profile/"
+        "/send/$hash",
+        "/profile/",
+        "/upload-test/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
+    "/send/$hash": {
+      "filePath": "send.$hash.tsx"
+    },
     "/profile/": {
       "filePath": "profile/index.tsx"
+    },
+    "/upload-test/": {
+      "filePath": "upload-test/index.tsx"
     }
   }
 }

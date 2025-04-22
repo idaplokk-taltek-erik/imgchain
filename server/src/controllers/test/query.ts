@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { protectedProcedure } from '../../lib/trpc/trpc';
 
 export const testQueryHandler = protectedProcedure
-  .input(z.void().optional)
+  .input(z.void().optional())
   .output(z.object({ success: z.boolean() }))
 
   .query(async ({ ctx }) => {

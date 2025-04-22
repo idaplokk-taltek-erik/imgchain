@@ -5,4 +5,4 @@ export const fieldError = z.object({
   message: z.string(),
 });
 
-export type FieldUser = z.infer<typeof fieldError>;
+export type FieldError = z.infer<typeof fieldError>;

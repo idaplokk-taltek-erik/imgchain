@@ -3,6 +3,12 @@
  * Please do not edit it manually.
  */
 
+import type { ColumnType } from "kysely";
+
+export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
+  ? ColumnType<S, I | undefined, U>
+  : ColumnType<T, T | undefined, T>;
+
 export interface Account {
   accessToken: string | null;
   accessTokenExpiresAt: string | null;
@@ -17,6 +23,18 @@ export interface Account {
   scope: string | null;
   updatedAt: string;
   userId: string;
+}
+
+export interface MediaProofs {
+  author_id: string;
+  created_at: Generated<string>;
+  file_name: string;
+  file_size: number;
+  hash: string;
+  id: string;
+  mime_type: string;
+  solana_signer: string;
+  solana_txid: string | null;
 }
 
 export interface Session {
@@ -51,6 +69,7 @@ export interface Verification {
 
 export interface DB {
   account: Account;
+  media_proofs: MediaProofs;
   session: Session;
   user: User;
   verification: Verification;

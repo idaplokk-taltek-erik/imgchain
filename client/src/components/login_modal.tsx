@@ -3,15 +3,11 @@ import { Button, Form, Input, message, Modal } from 'antd';
 import { useEffect, useState } from 'react';
 import { signIn, useSession } from '../lib/auth_client';
 
-interface LoginModalProps {}
 
-export function LoginModal(props: LoginModalProps) {
+export function LoginModal() {
   const [loginLoading, setLoginLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { data: session, isPending } = useSession();
-
-  console.log('session');
-  console.log(session);
 
   useEffect(() => {
     if (!isPending && session) {
@@ -43,6 +39,7 @@ export function LoginModal(props: LoginModalProps) {
       console.error('Login error:', error);
     } finally {
       setLoginLoading(false);
+      console.log(session);
     }
   };
 
