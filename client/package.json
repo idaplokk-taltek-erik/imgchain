@@ -11,12 +11,15 @@
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\""
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.66.9",
+    "@solana/web3.js": "^1.98.0",
+    "@tanstack/react-query": "^5.74.4",
     "@tanstack/react-router": "^1.105.0",
-    "@trpc/client": "^11.0.0-rc.808",
-    "@trpc/tanstack-react-query": "^11.0.0-rc.808",
+    "@trpc/client": "^11.1.0",
+    "@trpc/react-query": "^11.1.0",
+    "@trpc/tanstack-react-query": "^11.1.0",
     "antd": "^5.24.5",
     "better-auth": "^1.2.5",
+    "bs58": "^6.0.0",
     "dayjs": "^1.11.13",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
@@ -25,7 +28,7 @@
     "@eslint/js": "^9.19.0",
     "@tanstack/router-devtools": "^1.105.0",
     "@tanstack/router-plugin": "^1.105.0",
-    "@trpc/server": "^11.0.0-rc.808",
+    "@trpc/server": "^11.1.0",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",

@@ -90,12 +90,17 @@ export function Navigation() {
 
       <Menu
         mode="inline"
-        defaultSelectedKeys={['upload']}
+        defaultSelectedKeys={['home']}
         items={[
+          {
+            key: 'home',
+            icon: <UploadOutlined />,
+            label: <Link to="/">Upload</Link>,
+          },
           {
             key: 'upload',
             icon: <UploadOutlined />,
-            label: <Link to="/">Upload</Link>,
+            label: <Link to="/upload-test">Upload-test</Link>,
           },
           {
             key: 'profile',

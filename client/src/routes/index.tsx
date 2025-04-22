@@ -1,114 +1,198 @@
-import { InboxOutlined } from '@ant-design/icons';
-import { useQuery } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
-import {
-  Button,
-  DraggerProps,
-  Typography,
-  Upload,
-  UploadFile,
-  message,
-} from 'antd';
-import { useState } from 'react';
-import { useTRPC } from '../lib/trpc';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+
+import { ChangeEvent, useState } from 'react';
+import { checkMemoViaWeb3Devnet } from '../lib/checkMemoViaWeb3Devnet';
+import { generateSHA256Hash } from '../lib/getHash';
+import { trpc } from '../lib/trpc';
 
 export const Route = createFileRoute('/')({
   component: Index,
+  // beforeLoad(ctx) {
+  //   throw redirect({
+  //     to: '/upload',
+  //   });
+  // },
 });
 
+const SIGNER_PUBLIC_KEY = import.meta.env.VITE_SIGNER_PUBLIC_KEY;
+
 function Index() {
-  const testQuery = useQuery(
-    useTRPC().test.query.queryOptions(undefined as never),
-  );
-  console.log('testQuery');
-  console.log(testQuery);
+  const [hash, setHash] = useState('');
+  const [preview, setPreview] = useState('');
+  const [status, setStatus] = useState('');
+  const [showButton, setShowButton] = useState(false);
+  const [fileToSave, setFileToSave] = useState<File | null>(null);
+  const [manualHash, setManualHash] = useState('');
+  const [showChainCheck, setShowChainCheck] = useState(false);
+  const navigate = useNavigate({ from: '/' });
+  const [saveable, setSaveable] = useState(false); // eesmärk võimaldada ainult pildi üleslaadimisel salvestamine
 
-  const [fileList, setFileList] = useState<UploadFile[]>([
-    {
-      uid: '-1',
-      name: 'yyy.png',
-      status: 'done',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      thumbUrl:
-        'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    },
-  ]);
+  const checkLocal = async (hashHex: string) => {
+    setStatus(`🔍 Kontrollin lokaalselt: ${hashHex}`);
+    setShowButton(false);
+    setShowChainCheck(true);
 
-  console.log('fileList', fileList);
+    try {
+      const existingProof = await trpc.media_proof.byHash.query({ hash });
 
-  const props: DraggerProps = {
-    name: 'file',
-    listType: 'picture',
-    multiple: true,
-    fileList,
-    onChange(info) {
-      const { status } = info.file;
-
-      // Update fileList
-      setFileList(info.fileList);
-
-      if (status === 'done') {
-        message.success(`${info.file.name} file uploaded successfully.`);
-      } else if (status === 'error') {
-        message.error(`${info.file.name} file upload failed.`);
+      if (existingProof) {
+        setStatus(`✅ Leitud lokaalselt!
+TX ID: ${existingProof.solana_txid}
+Aeg: ${existingProof.created_at}
+Soovid kontrollida ka plokiahelast?`);
+      } else {
+        setStatus(
+          '❌ Ei leitud lokaalselt. Soovid kontrollida ka plokiahelast?',
+        );
       }
-    },
-    onDrop(e) {
-      console.log('Dropped files', e.dataTransfer.files);
-    },
-    customRequest: (options) => {
-      console.log('options');
-      console.log(options);
+    } catch (err) {
+      console.error(err);
+      setStatus('❌ Lokaalne kontroll ebaõnnestus!');
+    }
+  };
 
-      // save file in backend
-      setTimeout(() => {
-        const onSuccess = options.onSuccess;
+  const checkChain = async () => {
+    setStatus(
+      (prev) => `${prev}
+⏳ Kontrollin plokiahelast...`,
+    );
 
-        if (onSuccess) {
-          onSuccess('a');
-        }
-      }, 888);
-    },
-    // action: async (files) => {
+    try {
+      const chain = await checkMemoViaWeb3Devnet(SIGNER_PUBLIC_KEY, hash);
+      if (chain.found) {
+        setStatus(
+          (prev) => `${prev}
+✅ Leitud plokiahelast!
+TX ID: ${chain.signature}
+Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleString()}`,
+        );
+      } else if (!saveable) {
+        setStatus(
+          (prev) => `${prev}
+❌ Räsikoodi ei leitud.`,
+        );
+        setShowButton(false);
+      } else if (saveable && fileToSave) {
+        setStatus(
+          (prev) => `${prev}
+❌ Räsikoodi ei leitud. Võimalik salvestamiseks.`,
+        );
+        setShowButton(true);
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus(
+        (prev) => `${prev}
+❌ Plokiahela kontroll ebaõnnestus!`,
+      );
+    } finally {
+      setShowChainCheck(false);
+    }
+  };
 
-    // },
+  const handleFileChange = async (event: ChangeEvent) => {
+    const target = event.target as HTMLInputElement;
+    const files = target.files as FileList;
+    const file = files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image')) return alert('Palun vali pildifail!');
+
+    setFileToSave(file);
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => setPreview(reader.result!.toString());
+
+    const buffer = await file.arrayBuffer();
+    const hashHex = await generateSHA256Hash(buffer);
+
+    setHash(hashHex);
+    await checkLocal(hashHex);
+
+    setSaveable(true);
+  };
+
+  const handleManualCheck = async () => {
+    if (manualHash.length !== 64) {
+      return alert('Hash peab olema 64-kohaline!');
+    }
+    setFileToSave(null);
+    setPreview('');
+    setHash(manualHash);
+    setSaveable(false); // käsitsi pole salvestatav
+    setShowButton(false);
+    await checkLocal(manualHash);
+  };
+
+  const handleSaveAndSend = async () => {
+    if (!fileToSave || !hash || !saveable) return alert('Viga: puudub fail.');
+
+    try {
+      await trpc.media_proof.add.mutate({
+        hash,
+        file_name: fileToSave.name,
+        file_size: fileToSave.size,
+        mime_type: fileToSave.type,
+      });
+      setStatus('✅ Salvestatud lokaalselt. Edasi suunamine...');
+      navigate({
+        to: '/send/$hash',
+        params: {
+          hash,
+        },
+      });
+    } catch (err) {
+      console.error(err);
+      setStatus('❌ Salvestamine ebaõnnestus!');
+    }
   };
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-      <Typography>
-        <Typography.Title level={2}>File Upload</Typography.Title>
-        <Typography.Paragraph>
-          Use this tool to upload your files for processing. You can upload
-          multiple files at once by dragging and dropping them into the area
-          below, or by clicking to select files from your computer. Supported
-          file formats include PDF, DOCX, XLSX, and CSV.
-        </Typography.Paragraph>
-      </Typography>
+    <div className="card p-4 shadow-sm">
+      <input
+        type="file"
+        className="form-control mb-3"
+        onChange={handleFileChange}
+      />
 
-      <Upload.Dragger {...props} style={{ marginTop: '1.5rem' }}>
-        <p className="ant-upload-drag-icon">
-          <InboxOutlined />
-        </p>
-        <p className="ant-upload-text">
-          Click or drag files to this area to upload
-        </p>
-        <p className="ant-upload-hint">
-          Support for single or bulk upload. Strictly prohibited to upload
-          company data or other banned files.
-        </p>
-      </Upload.Dragger>
+      <div className="input-group mb-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Sisesta hash käsitsi"
+          value={manualHash}
+          onChange={(e) => setManualHash(e.target.value.trim())}
+        />
+        <button className="btn btn-outline-primary" onClick={handleManualCheck}>
+          Kontrolli
+        </button>
+      </div>
 
-      {fileList.length > 0 && (
-        <div
-          style={{
-            marginTop: '1.5rem',
-            display: 'flex',
-            justifyContent: 'flex-end',
-          }}
-        >
-          <Button type="primary">Do something else with files?</Button>
+      {preview && (
+        <img src={preview} className="img-fluid mb-3" alt="Eelvaade" />
+      )}
+
+      {hash && (
+        <div className="alert alert-info mt-3">
+          <strong>Faili räsikood:</strong>
+          <br />
+          <code>{hash}</code>
         </div>
+      )}
+
+      {status && <pre>{status}</pre>}
+
+      {showChainCheck && (
+        <button className="btn btn-outline-secondary mt-2" onClick={checkChain}>
+          Kontrolli plokiahelast
+        </button>
+      )}
+
+      {showButton && saveable && (
+        <button className="btn btn-primary mt-3" onClick={handleSaveAndSend}>
+          ➕ Lisa plokiahelasse ja salvesta
+        </button>
       )}
     </div>
   );
