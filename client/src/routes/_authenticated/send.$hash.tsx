@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
-import { trpc } from '../lib/trpc';
+import { trpc } from '../../lib/trpc';
 
-export const Route = createFileRoute('/send/$hash')({
+export const Route = createFileRoute('/_authenticated/send/$hash')({
   component: RouteComponent,
 });
 

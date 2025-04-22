@@ -10,6 +10,7 @@ export const betterAuth = betterAuthLib({
     enabled: true,
     sendEmailVerificationOnSignUp: true,
     minPasswordLength: 1,
+    autoSignIn: true,
     async sendVerificationEmail() {
       console.log('Send email to verify email address');
     },

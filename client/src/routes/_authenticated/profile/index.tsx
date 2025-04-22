@@ -23,13 +23,13 @@ import {
 } from 'antd';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { useSession } from '../../lib/auth_client';
+import { useSession } from '../../../lib/auth_client';
 
 dayjs.extend(relativeTime);
 
 const { Title, Paragraph, Text } = Typography;
 
-export const Route = createFileRoute('/profile/')({
+export const Route = createFileRoute('/_authenticated/profile/')({
   component: ProfilePage,
 });
 

@@ -11,117 +11,151 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as IndexImport } from './routes/index'
-import { Route as UploadTestIndexImport } from './routes/upload-test/index'
-import { Route as ProfileIndexImport } from './routes/profile/index'
-import { Route as SendHashImport } from './routes/send.$hash'
+import { Route as AuthenticatedImport } from './routes/_authenticated'
+import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedUploadTestIndexImport } from './routes/_authenticated/upload-test/index'
+import { Route as AuthenticatedProfileIndexImport } from './routes/_authenticated/profile/index'
+import { Route as AuthenticatedSendHashImport } from './routes/_authenticated/send.$hash'
 
 // Create/Update Routes
 
-const IndexRoute = IndexImport.update({
+const AuthenticatedRoute = AuthenticatedImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthenticatedIndexRoute = AuthenticatedIndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 
-const UploadTestIndexRoute = UploadTestIndexImport.update({
-  id: '/upload-test/',
-  path: '/upload-test/',
-  getParentRoute: () => rootRoute,
-} as any)
+const AuthenticatedUploadTestIndexRoute =
+  AuthenticatedUploadTestIndexImport.update({
+    id: '/upload-test/',
+    path: '/upload-test/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
-const ProfileIndexRoute = ProfileIndexImport.update({
+const AuthenticatedProfileIndexRoute = AuthenticatedProfileIndexImport.update({
   id: '/profile/',
   path: '/profile/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 
-const SendHashRoute = SendHashImport.update({
+const AuthenticatedSendHashRoute = AuthenticatedSendHashImport.update({
   id: '/send/$hash',
   path: '/send/$hash',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedImport
+      parentRoute: typeof rootRoute
+    }
+    '/_authenticated/': {
+      id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AuthenticatedIndexImport
+      parentRoute: typeof AuthenticatedImport
     }
-    '/send/$hash': {
-      id: '/send/$hash'
+    '/_authenticated/send/$hash': {
+      id: '/_authenticated/send/$hash'
       path: '/send/$hash'
       fullPath: '/send/$hash'
-      preLoaderRoute: typeof SendHashImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AuthenticatedSendHashImport
+      parentRoute: typeof AuthenticatedImport
     }
-    '/profile/': {
-      id: '/profile/'
+    '/_authenticated/profile/': {
+      id: '/_authenticated/profile/'
       path: '/profile'
       fullPath: '/profile'
-      preLoaderRoute: typeof ProfileIndexImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AuthenticatedProfileIndexImport
+      parentRoute: typeof AuthenticatedImport
     }
-    '/upload-test/': {
-      id: '/upload-test/'
+    '/_authenticated/upload-test/': {
+      id: '/_authenticated/upload-test/'
       path: '/upload-test'
       fullPath: '/upload-test'
-      preLoaderRoute: typeof UploadTestIndexImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AuthenticatedUploadTestIndexImport
+      parentRoute: typeof AuthenticatedImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedSendHashRoute: typeof AuthenticatedSendHashRoute
+  AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
+  AuthenticatedUploadTestIndexRoute: typeof AuthenticatedUploadTestIndexRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedSendHashRoute: AuthenticatedSendHashRoute,
+  AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
+  AuthenticatedUploadTestIndexRoute: AuthenticatedUploadTestIndexRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/send/$hash': typeof SendHashRoute
-  '/profile': typeof ProfileIndexRoute
-  '/upload-test': typeof UploadTestIndexRoute
+  '': typeof AuthenticatedRouteWithChildren
+  '/': typeof AuthenticatedIndexRoute
+  '/send/$hash': typeof AuthenticatedSendHashRoute
+  '/profile': typeof AuthenticatedProfileIndexRoute
+  '/upload-test': typeof AuthenticatedUploadTestIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/send/$hash': typeof SendHashRoute
-  '/profile': typeof ProfileIndexRoute
-  '/upload-test': typeof UploadTestIndexRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/send/$hash': typeof AuthenticatedSendHashRoute
+  '/profile': typeof AuthenticatedProfileIndexRoute
+  '/upload-test': typeof AuthenticatedUploadTestIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexRoute
-  '/send/$hash': typeof SendHashRoute
-  '/profile/': typeof ProfileIndexRoute
-  '/upload-test/': typeof UploadTestIndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/send/$hash': typeof AuthenticatedSendHashRoute
+  '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
+  '/_authenticated/upload-test/': typeof AuthenticatedUploadTestIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/send/$hash' | '/profile' | '/upload-test'
+  fullPaths: '' | '/' | '/send/$hash' | '/profile' | '/upload-test'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/send/$hash' | '/profile' | '/upload-test'
-  id: '__root__' | '/' | '/send/$hash' | '/profile/' | '/upload-test/'
+  id:
+    | '__root__'
+    | '/_authenticated'
+    | '/_authenticated/'
+    | '/_authenticated/send/$hash'
+    | '/_authenticated/profile/'
+    | '/_authenticated/upload-test/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  SendHashRoute: typeof SendHashRoute
-  ProfileIndexRoute: typeof ProfileIndexRoute
-  UploadTestIndexRoute: typeof UploadTestIndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  SendHashRoute: SendHashRoute,
-  ProfileIndexRoute: ProfileIndexRoute,
-  UploadTestIndexRoute: UploadTestIndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -134,23 +168,33 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
-        "/send/$hash",
-        "/profile/",
-        "/upload-test/"
+        "/_authenticated"
       ]
     },
-    "/": {
-      "filePath": "index.tsx"
+    "/_authenticated": {
+      "filePath": "_authenticated.tsx",
+      "children": [
+        "/_authenticated/",
+        "/_authenticated/send/$hash",
+        "/_authenticated/profile/",
+        "/_authenticated/upload-test/"
+      ]
     },
-    "/send/$hash": {
-      "filePath": "send.$hash.tsx"
+    "/_authenticated/": {
+      "filePath": "_authenticated/index.tsx",
+      "parent": "/_authenticated"
     },
-    "/profile/": {
-      "filePath": "profile/index.tsx"
+    "/_authenticated/send/$hash": {
+      "filePath": "_authenticated/send.$hash.tsx",
+      "parent": "/_authenticated"
     },
-    "/upload-test/": {
-      "filePath": "upload-test/index.tsx"
+    "/_authenticated/profile/": {
+      "filePath": "_authenticated/profile/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/upload-test/": {
+      "filePath": "_authenticated/upload-test/index.tsx",
+      "parent": "/_authenticated"
     }
   }
 }

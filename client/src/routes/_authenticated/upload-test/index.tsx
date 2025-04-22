@@ -10,7 +10,7 @@ import {
 } from 'antd';
 import { useState } from 'react';
 
-export const Route = createFileRoute('/upload-test/')({
+export const Route = createFileRoute('/_authenticated/upload-test/')({
   component: UploadComponent,
 });
 

@@ -1,11 +1,11 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
 import { ChangeEvent, useState } from 'react';
-import { checkMemoViaWeb3Devnet } from '../lib/checkMemoViaWeb3Devnet';
-import { generateSHA256Hash } from '../lib/getHash';
-import { trpc } from '../lib/trpc';
+import { checkMemoViaWeb3Devnet } from '../../lib/checkMemoViaWeb3Devnet';
+import { generateSHA256Hash } from '../../lib/getHash';
+import { trpc } from '../../lib/trpc';
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute('/_authenticated/')({
   component: Index,
   // beforeLoad(ctx) {
   //   throw redirect({
