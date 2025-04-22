@@ -77,7 +77,6 @@ Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleS
           (prev) => `${prev}
 ❌ Räsikoodi ei leitud. Võimalik salvestamiseks.`,
         );
-        setShowButton(true);
       }
     } catch (err) {
       console.error(err);

@@ -18,6 +18,7 @@ export const addMediaProofHandler = protectedProcedure
         author_id: ctx.user.id,
         solana_signer: env.SOLANA_SIGNER_PUBLIC_KEY,
       })
+      .onConflict(col => col.doNothing())
       .execute();
 
     return {
