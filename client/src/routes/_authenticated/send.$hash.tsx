@@ -70,7 +70,7 @@ function RouteComponent() {
         className="btn btn-primary mt-3"
         onClick={() =>
           navigate({
-            to: '/',
+            to: '/upload',
           })
         }
       >

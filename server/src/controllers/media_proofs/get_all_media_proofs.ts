@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { db } from '../../db/db';
-import { protectedProcedure } from '../../lib/trpc/trpc';
+import { publicProcedure } from '../../lib/trpc/trpc';
 import { MediaProof } from '../../schema/media_proof';
 
-export const getAllMediaProofsQueryHandler = protectedProcedure
+export const getAllMediaProofsQueryHandler = publicProcedure
   .input(z.void().optional())
   .output(z.array(MediaProof))
 
@@ -11,5 +11,6 @@ export const getAllMediaProofsQueryHandler = protectedProcedure
     return await db
       .selectFrom('media_proofs')
       .selectAll()
+      .orderBy('created_at desc')
       .execute();
   });

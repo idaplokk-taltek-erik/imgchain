@@ -4,6 +4,8 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UploadOutlined,
+  FileImageOutlined,
+  NotificationOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import { Link, useNavigate } from '@tanstack/react-router';
@@ -31,7 +33,7 @@ export function Navigation() {
 
   const handleLogout = async () => {
     await signOut();
-    navigate({ to: '/' });
+    navigate({ to: '/upload' });
   };
 
   const toggleCollapsed = () => {
@@ -94,11 +96,16 @@ export function Navigation() {
         items={[
           {
             key: 'home',
-            icon: <UploadOutlined />,
-            label: <Link to="/">Upload</Link>,
+            icon: <NotificationOutlined />,
+            label: <Link to="/">Latest</Link>,
           },
           {
             key: 'upload',
+            icon: <UploadOutlined />,
+            label: <Link to="/upload">Upload</Link>,
+          },
+          {
+            key: 'upload-test',
             icon: <UploadOutlined />,
             label: <Link to="/upload-test">Upload-test</Link>,
           },
