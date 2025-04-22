@@ -1,4 +1,8 @@
-import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import {
+  GoogleSquareFilled,
+  LockOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import { Button, Flex, Form, Input, message } from 'antd';
 import { useState } from 'react';
 import { signIn, signUp, useSession } from '../lib/auth_client';
@@ -49,56 +53,71 @@ export function LoginForm() {
   };
 
   return (
-    <Form
-      name="login"
-      initialValues={{ remember: true }}
-      onFinish={handleLogin}
-      style={{ maxWidth: 300, margin: '0 auto' }}
-    >
-      {type === 'register' && (
+    <Flex vertical wrap={false} gap="large" align="center">
+      <Button
+        type="dashed"
+        icon={<GoogleSquareFilled />}
+        onClick={() => {
+          signIn.social({
+            provider: 'google',
+            callbackURL: 'http://localhost:4000/profile',
+            errorCallbackURL: 'http://localhost:4000',
+          });
+        }}
+      >
+        Auth via Google
+      </Button>
+      <Form
+        name="login"
+        initialValues={{ remember: true }}
+        onFinish={handleLogin}
+        style={{ maxWidth: 300, margin: '0 auto' }}
+      >
+        {type === 'register' && (
+          <Form.Item
+            name="name"
+            rules={[{ required: true, message: 'Please input your name!' }]}
+          >
+            <Input prefix={<UserOutlined />} placeholder="Name" />
+          </Form.Item>
+        )}
+
         <Form.Item
-          name="name"
-          rules={[{ required: true, message: 'Please input your name!' }]}
+          name="email"
+          rules={[{ required: true, message: 'Please input your email!' }]}
         >
-          <Input prefix={<UserOutlined />} placeholder="Name" />
+          <Input prefix={<UserOutlined />} placeholder="Email" />
         </Form.Item>
-      )}
 
-      <Form.Item
-        name="email"
-        rules={[{ required: true, message: 'Please input your email!' }]}
-      >
-        <Input prefix={<UserOutlined />} placeholder="Email" />
-      </Form.Item>
-
-      <Form.Item
-        name="password"
-        rules={[{ required: true, message: 'Please input your password!' }]}
-      >
-        <Input.Password prefix={<LockOutlined />} placeholder="Password" />
-      </Form.Item>
-
-      <Flex justify="space-between">
-        <Button
-          type="link"
-          htmlType="submit"
-          loading={loginLoading}
-          onClick={(e) => {
-            e.preventDefault();
-            setType((type) => (type === 'login' ? 'register' : 'login'));
-          }}
+        <Form.Item
+          name="password"
+          rules={[{ required: true, message: 'Please input your password!' }]}
         >
-          {type === 'login'
-            ? "Don't have an account?"
-            : 'Already have an account?'}
-        </Button>
+          <Input.Password prefix={<LockOutlined />} placeholder="Password" />
+        </Form.Item>
 
-        <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loginLoading}>
-            {type === 'login' ? 'Login' : 'Register'}
+        <Flex justify="space-between">
+          <Button
+            type="link"
+            htmlType="submit"
+            loading={loginLoading}
+            onClick={(e) => {
+              e.preventDefault();
+              setType((type) => (type === 'login' ? 'register' : 'login'));
+            }}
+          >
+            {type === 'login'
+              ? "Don't have an account?"
+              : 'Already have an account?'}
           </Button>
-        </Form.Item>
-      </Flex>
-    </Form>
+
+          <Form.Item>
+            <Button type="primary" htmlType="submit" loading={loginLoading}>
+              {type === 'login' ? 'Login' : 'Register'}
+            </Button>
+          </Form.Item>
+        </Flex>
+      </Form>
+    </Flex>
   );
 }
