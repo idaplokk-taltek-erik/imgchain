@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { Flex } from 'antd';
 import { useEffect, useState } from 'react';
-import { trpc } from '../../lib/trpc';
+import { trpc, trpcHooks } from '../../lib/trpc';
 
 export const Route = createFileRoute('/_authenticated/send/$hash')({
   component: RouteComponent,
@@ -8,6 +9,8 @@ export const Route = createFileRoute('/_authenticated/send/$hash')({
 
 function RouteComponent() {
   const { hash } = Route.useParams();
+  const mediaProofQuery = trpcHooks.media_proof.byHash.useQuery({ hash });
+
   const navigate = useNavigate();
 
   const [status, setStatus] = useState('');
@@ -56,9 +59,12 @@ function RouteComponent() {
         </p>
       )}
       {hash && (
-        <p>
-          <strong>Pildi räsikood:</strong> {hash}
-        </p>
+        <Flex vertical>
+          <p>
+            <strong>Pildi räsikood:</strong> {hash}
+          </p>
+          <img width="200px" src={mediaProofQuery.data?.image_url ?? ''} />
+        </Flex>
       )}
       <button
         className="btn btn-primary mt-3"

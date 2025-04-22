@@ -134,7 +134,19 @@ Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleS
         file_size: fileToSave.size,
         mime_type: fileToSave.type,
       });
-      setStatus('✅ Salvestatud lokaalselt. Edasi suunamine...');
+      setStatus('✅ Salvestatud lokaalselt. Pildi üleslaadimine...');
+      const formData = new FormData();
+      formData.append('file', fileToSave);
+
+      const fileUploadResponse = await fetch(`/api/upload/${hash}`, {
+        method: 'POST',
+        body: formData,
+      });
+      if (!fileUploadResponse.ok) {
+        throw new Error('File upload failed');
+      }
+
+      setStatus('✅ Pilt salvestatud. Edasi suunamine...');
       navigate({
         to: '/send/$hash',
         params: {

@@ -8,9 +8,12 @@ export const getMediaProofsByHashQueryHandler = protectedProcedure
   .output(MediaProof.or(z.null()))
 
   .query(async ({ ctx, input }) => {
-    return await db
-      .selectFrom('media_proofs')
-      .selectAll()
-      .where('hash', '=', input.hash)
-      .executeTakeFirst() ?? null;
+    const result =
+      (await db
+        .selectFrom('media_proofs')
+        .selectAll()
+        .where('hash', '=', input.hash)
+        .executeTakeFirst()) ?? null;
+
+    return result;
   });

@@ -39,7 +39,7 @@ export function registerUploadImageRoute(server: FastifyInstance) {
                 .send({ error: 'No media proof uploaded prior' });
             }
 
-            if (mediaProof.inmage_url) {
+            if (mediaProof.image_url) {
               return reply
                 .code(400)
                 .send({ error: 'Image already uploaded for the media proof!' });
@@ -62,7 +62,7 @@ export function registerUploadImageRoute(server: FastifyInstance) {
             return await db
               .updateTable('media_proofs')
               .where('hash', '=', request.params.hash)
-              .set({ inmage_url: `/uploads/${fileName}` })
+              .set({ image_url: `/uploads/${fileName}` })
               .returningAll()
               .executeTakeFirst();
           } catch (err) {

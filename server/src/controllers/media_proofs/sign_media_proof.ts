@@ -28,8 +28,6 @@ export const signMediaProofHandler = protectedProcedure
       .where('hash', '=', input.hash)
       .executeTakeFirst();
 
-    console.log({ mediaProof });
-
     if (!mediaProof) {
       return { success: false, error_message: 'Media proof does not exist' };
     }

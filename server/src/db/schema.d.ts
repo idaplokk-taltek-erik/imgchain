@@ -32,7 +32,7 @@ export interface MediaProofs {
   file_size: number;
   hash: string;
   id: string;
-  inmage_url: string | null;
+  image_url: string | null;
   mime_type: string;
   solana_signer: string;
   solana_txid: string | null;

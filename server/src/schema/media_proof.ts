@@ -10,7 +10,7 @@ export type MediaProofBase = z.infer<typeof MediaProofBase>;
 
 export const MediaProof = MediaProofBase.extend({
   author_id: z.string(),
-  created_at: z.string().date(),
+  created_at: z.string(),
   id: z.string(),
   mime_type: z.string().or(z.null()),
   solana_signer: z.string(),
