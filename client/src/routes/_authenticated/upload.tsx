@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
 import { ChangeEvent, useState } from 'react';
-import { checkMemoViaWeb3Devnet } from '../../lib/checkMemoViaWeb3Devnet';
+import { checkMemoViaWeb3Devnet } from '../../lib/checkMemoViaWeb3Devnet_by_pub_key';
 import { generateSHA256Hash } from '../../lib/getHash';
 import { trpc } from '../../lib/trpc';
 
