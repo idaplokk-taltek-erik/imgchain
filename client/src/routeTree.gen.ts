@@ -12,8 +12,6 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
-import { Route as IndexImport } from './routes/index'
-import { Route as AuthenticatedUploadImport } from './routes/_authenticated/upload'
 import { Route as AuthenticatedUploadTestIndexImport } from './routes/_authenticated/upload-test/index'
 import { Route as AuthenticatedProfileIndexImport } from './routes/_authenticated/profile/index'
 import { Route as AuthenticatedSendHashImport } from './routes/_authenticated/send.$hash'
@@ -23,18 +21,6 @@ import { Route as AuthenticatedSendHashImport } from './routes/_authenticated/se
 const AuthenticatedRoute = AuthenticatedImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRoute,
-} as any)
-
-const IndexRoute = IndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const AuthenticatedUploadRoute = AuthenticatedUploadImport.update({
-  id: '/upload',
-  path: '/upload',
-  getParentRoute: () => AuthenticatedRoute,
 } as any)
 
 const AuthenticatedUploadTestIndexRoute =
@@ -60,26 +46,12 @@ const AuthenticatedSendHashRoute = AuthenticatedSendHashImport.update({
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
       fullPath: ''
       preLoaderRoute: typeof AuthenticatedImport
       parentRoute: typeof rootRoute
-    }
-    '/_authenticated/upload': {
-      id: '/_authenticated/upload'
-      path: '/upload'
-      fullPath: '/upload'
-      preLoaderRoute: typeof AuthenticatedUploadImport
-      parentRoute: typeof AuthenticatedImport
     }
     '/_authenticated/send/$hash': {
       id: '/_authenticated/send/$hash'
@@ -108,14 +80,12 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AuthenticatedRouteChildren {
-  AuthenticatedUploadRoute: typeof AuthenticatedUploadRoute
   AuthenticatedSendHashRoute: typeof AuthenticatedSendHashRoute
   AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
   AuthenticatedUploadTestIndexRoute: typeof AuthenticatedUploadTestIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedUploadRoute: AuthenticatedUploadRoute,
   AuthenticatedSendHashRoute: AuthenticatedSendHashRoute,
   AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
   AuthenticatedUploadTestIndexRoute: AuthenticatedUploadTestIndexRoute,
@@ -126,18 +96,14 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 )
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
-  '/upload': typeof AuthenticatedUploadRoute
   '/send/$hash': typeof AuthenticatedSendHashRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
   '/upload-test': typeof AuthenticatedUploadTestIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
-  '/upload': typeof AuthenticatedUploadRoute
   '/send/$hash': typeof AuthenticatedSendHashRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
   '/upload-test': typeof AuthenticatedUploadTestIndexRoute
@@ -145,9 +111,7 @@ export interface FileRoutesByTo {
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
-  '/_authenticated/upload': typeof AuthenticatedUploadRoute
   '/_authenticated/send/$hash': typeof AuthenticatedSendHashRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
   '/_authenticated/upload-test/': typeof AuthenticatedUploadTestIndexRoute
@@ -155,14 +119,12 @@ export interface FileRoutesById {
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '' | '/upload' | '/send/$hash' | '/profile' | '/upload-test'
+  fullPaths: '' | '/send/$hash' | '/profile' | '/upload-test'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/upload' | '/send/$hash' | '/profile' | '/upload-test'
+  to: '' | '/send/$hash' | '/profile' | '/upload-test'
   id:
     | '__root__'
-    | '/'
     | '/_authenticated'
-    | '/_authenticated/upload'
     | '/_authenticated/send/$hash'
     | '/_authenticated/profile/'
     | '/_authenticated/upload-test/'
@@ -170,12 +132,10 @@ export interface FileRouteTypes {
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
 }
 
@@ -189,25 +149,16 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
         "/_authenticated"
       ]
-    },
-    "/": {
-      "filePath": "index.tsx"
     },
     "/_authenticated": {
       "filePath": "_authenticated.tsx",
       "children": [
-        "/_authenticated/upload",
         "/_authenticated/send/$hash",
         "/_authenticated/profile/",
         "/_authenticated/upload-test/"
       ]
-    },
-    "/_authenticated/upload": {
-      "filePath": "_authenticated/upload.tsx",
-      "parent": "/_authenticated"
     },
     "/_authenticated/send/$hash": {
       "filePath": "_authenticated/send.$hash.tsx",
