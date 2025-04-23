@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
 import { ChangeEvent, useState } from 'react';
-import { checkMemoViaWeb3Devnet } from '../../lib/checkMemoViaWeb3Devnet_by_pub_key';
+import { checkMemoViaWeb3Devnet_TX_ID } from '../../lib/checkMemoViaWeb3Devnet_by_tx_id';
 import { generateSHA256Hash } from '../../lib/getHash';
 import { trpc } from '../../lib/trpc';
 
@@ -24,24 +24,29 @@ function Index() {
   const [showChainCheck, setShowChainCheck] = useState(false);
   const navigate = useNavigate({ from: '/' });
   const [saveable, setSaveable] = useState(false); // eesmärk võimaldada ainult pildi üleslaadimisel salvestamine
+  const [txId, setTxId] = useState(null);
 
   const checkLocal = async (hashHex: string) => {
     setStatus(`🔍 Kontrollin lokaalselt: ${hashHex}`);
     setShowButton(false);
     setShowChainCheck(true);
-  console.log("VITE_SIGNER_PUBLIC_KEY =", SIGNER_PUBLIC_KEY);
+
     try {
       const existingProof = await trpc.media_proof.byHash.query({ hash });
 
       if (existingProof) {
+        setTxId(existingProof.solana_txid);
         setStatus(`✅ Leitud lokaalselt!
 TX ID: ${existingProof.solana_txid}
 Aeg: ${existingProof.created_at}
 Soovid kontrollida ka plokiahelast?`);
       } else {
         setStatus(
-          '❌ Ei leitud lokaalselt. Soovid kontrollida ka plokiahelast?',
+          '❌ Ei leitud lokaalselt.',
         );
+        setShowButton(true);
+        setSaveable(true);
+        setShowChainCheck(false);
       }
     } catch (err) {
       console.error(err);
@@ -56,7 +61,9 @@ Soovid kontrollida ka plokiahelast?`);
     );
 
     try {
-      const chain = await checkMemoViaWeb3Devnet(SIGNER_PUBLIC_KEY, hash);
+      console.log('Kontrollin Devnet tehingut:', txId);
+      console.log('Otsin räsi:', hash);
+      const chain = await checkMemoViaWeb3Devnet_TX_ID(txId, hash);
       if (chain.found) {
         setStatus(
           (prev) => `${prev}
@@ -64,6 +71,7 @@ Soovid kontrollida ka plokiahelast?`);
 TX ID: ${chain.signature}
 Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleString()}`,
         );
+        setShowChainCheck(true);
       } else if (!saveable) {
         setStatus(
           (prev) => `${prev}
@@ -133,7 +141,7 @@ Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleS
         mime_type: fileToSave.type,
       });
       setStatus('✅ Salvestatud lokaalselt. Pildi üleslaadimine...');
-      const formData = new FormData();
+      /* const formData = new FormData();
       formData.append('file', fileToSave);
 
       const fileUploadResponse = await fetch(`/api/upload/${hash}`, {
@@ -144,7 +152,7 @@ Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleS
         throw new Error('File upload failed');
       }
 
-      setStatus('✅ Pilt salvestatud. Edasi suunamine...');
+      setStatus('✅ Pilt salvestatud. Edasi suunamine...'); */ // Hetkel hea meelega ei salvestaks faile. See tekitab probleemi, et fail olemas, aga tegelikult ei ole plokiahelas.
       navigate({
         to: '/send/$hash',
         params: {

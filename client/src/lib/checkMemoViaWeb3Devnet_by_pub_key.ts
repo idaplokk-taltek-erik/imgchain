@@ -3,7 +3,7 @@ import bs58 from 'bs58'; // Memode dekrüpteerimine
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-export async function checkMemoViaWeb3Devnet(signerAddress: string, hash: string) {
+export async function checkMemoViaWeb3Devnet_by_pub_key(signerAddress: string, hash: string) {
   const connection = new Connection('https://api.devnet.solana.com');
   const publicKey = new PublicKey(signerAddress);
   const expectedMemo = `MediaProof:${hash}`;
