@@ -14,8 +14,6 @@ export const Route = createFileRoute('/_authenticated/upload')({
   // },
 });
 
-const SIGNER_PUBLIC_KEY = import.meta.env.VITE_SIGNER_PUBLIC_KEY;
-
 function Index() {
   const [hash, setHash] = useState('');
   const [preview, setPreview] = useState('');
@@ -31,7 +29,7 @@ function Index() {
     setStatus(`🔍 Kontrollin lokaalselt: ${hashHex}`);
     setShowButton(false);
     setShowChainCheck(true);
-
+  console.log("VITE_SIGNER_PUBLIC_KEY =", SIGNER_PUBLIC_KEY);
     try {
       const existingProof = await trpc.media_proof.byHash.query({ hash });
 
