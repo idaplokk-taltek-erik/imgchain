@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { Flex } from 'antd';
-import { useEffect, useState } from 'react';
-import { trpc, trpcHooks } from '../../lib/trpc';
+import { trpcHooks } from '../../lib/trpc';
 
 export const Route = createFileRoute('/_authenticated/send/$hash')({
   component: RouteComponent,
@@ -10,53 +9,35 @@ export const Route = createFileRoute('/_authenticated/send/$hash')({
 function RouteComponent() {
   const { hash } = Route.useParams();
   const mediaProofQuery = trpcHooks.media_proof.byHash.useQuery({ hash });
+  const signQuery = trpcHooks.media_proof.sign.useQuery(
+    {
+      hash,
+    },
+    {
+      enabled: mediaProofQuery.isSuccess,
+      queryHash: hash,
+      retry: false,
+    },
+  );
 
   const navigate = useNavigate();
-
-  const [status, setStatus] = useState('');
-  const [txid, setTxid] = useState('');
-  const [instruction, setInstruction] = useState('');
-
-  // See jookseb react dev modis 2 korda by default, ala see trigger peaks kuidagi teisiti olema
-  useEffect(() => {
-    const send = async () => {
-      if (!hash) return setStatus('Hash puudub');
-
-      setStatus('Saadan hash’i Solana võrku...');
-      try {
-        const result = await trpc.media_proof.sign.mutate({ hash });
-        if (result.error_message || !result.solana_txid) {
-          console.error(result.error_message);
-          setStatus('Saatmine ebaõnnestus!');
-          return;
-        }
-
-        const txid = result.solana_txid;
-        setTxid(txid);
-        setInstruction(`MediaProof:${hash}`);
-        setStatus('Kõik salvestatud: räsikood + plokiahela signatuur!');
-      } catch (err) {
-        console.error(err);
-        setStatus('Saatmine ebaõnnestus!');
-      }
-    };
-
-    send();
-  }, []);
 
   return (
     <div className="card p-4 shadow">
       <h4>Tehingu staatuse kontroll</h4>
-      <p>{status}</p>
-      {txid && (
-        <p>
-          <strong>Tehingu ID:</strong> {txid}
-        </p>
-      )}
-      {instruction && (
-        <p>
-          <strong>Memo sisu:</strong> {instruction}
-        </p>
+      {!hash && <p>Hash puudub</p>}
+      {signQuery.isPending && <p>Saadan hash'i Solana võrku...</p>}
+      {signQuery.error  && <p>Saatmine ebaõnnestus! {signQuery.error.message}</p>}
+      {signQuery.isSuccess && (
+        <>
+          <p>Kõik salvestatud: räsikood + plokiahela signatuur!</p>
+          <p>
+            <strong>Tehingu ID:</strong> {signQuery.data.solana_txid}
+          </p>
+          <p>
+            <strong>Memo sisu:</strong> {`MediaProof:${hash}`}
+          </p>
+        </>
       )}
       {hash && (
         <Flex vertical>

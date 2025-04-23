@@ -10,18 +10,21 @@ import {
   Transaction,
   TransactionInstruction,
 } from '@solana/web3.js';
+import { TRPCError } from '@trpc/server';
+import { MediaProof } from '../../schema/media_proof';
+
+const connection = new Connection(env.SOLANA_RPC_URL, 'confirmed');
+const MEMO_PROGRAM_ID = new PublicKey(env.SOLANA_MEMO_PROGRAM_ID);
+const fromKeypair = Keypair.fromSecretKey(
+  new Uint8Array(env.SOLANA_SECRET_KEY_ARRAY),
+);
+const publicKey = fromKeypair.publicKey;
 
 export const signMediaProofHandler = protectedProcedure
   .input(z.object({ hash: z.string() }))
-  .output(
-    z.object({
-      success: z.boolean(),
-      error_message: z.string().optional(),
-      solana_txid: z.string().optional(),
-    }),
-  )
+  .output(MediaProof)
 
-  .mutation(async ({ ctx, input }) => {
+  .query(async ({ ctx, input }) => {
     const mediaProof = await db
       .selectFrom('media_proofs')
       .selectAll()
@@ -29,7 +32,10 @@ export const signMediaProofHandler = protectedProcedure
       .executeTakeFirst();
 
     if (!mediaProof) {
-      return { success: false, error_message: 'Media proof does not exist' };
+      throw new TRPCError({
+        message: 'Media proof does not exist',
+        code: 'BAD_REQUEST',
+      });
     }
 
     try {
@@ -40,29 +46,19 @@ export const signMediaProofHandler = protectedProcedure
           solana_txid,
         })
         .where('hash', '=', input.hash)
+        .returningAll()
         .executeTakeFirst();
 
-      return {
-        success: true,
-        solana_txid,
-      };
+      return result!;
     } catch (err: unknown) {
-      return {
-        success: false,
-        error_message: err instanceof Error ? err.message : `${err}`,
-      };
+      throw new TRPCError({
+        message: err instanceof Error ? err.message : `${err}`,
+        code: 'INTERNAL_SERVER_ERROR',
+      });
     }
   });
 
 export async function signHashInSolana(hash: string): Promise<string> {
-  const connection = new Connection(env.SOLANA_RPC_URL, 'confirmed');
-  const MEMO_PROGRAM_ID = new PublicKey(env.SOLANA_MEMO_PROGRAM_ID);
-
-  const fromKeypair = Keypair.fromSecretKey(
-    new Uint8Array(env.SOLANA_SECRET_KEY_ARRAY),
-  );
-  const publicKey = fromKeypair.publicKey;
-
   const memoString = `MediaProof:${hash}`;
 
   const memoInstruction = new TransactionInstruction({
