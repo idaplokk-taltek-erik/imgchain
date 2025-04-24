@@ -1,23 +1,21 @@
 import { FastifyInstance } from 'fastify';
+import { renderTrpcPanel } from 'trpc-ui';
 import { appRouter } from '../../trpc_router';
 import { betterAuth } from '../auth/better_auth';
-import { renderTrpcPanel } from 'trpc-ui';
 
 export function registerOpenApi(fastify: FastifyInstance) {
   fastify.get('/docs', async (_, reply) => {
-
     return reply.header('Content-Type', 'text/html').send(
       renderTrpcPanel(appRouter, {
         url: 'http://localhost:3000/trpc', // Base url of your trpc server
         meta: {
-          title: 'Media proofs API',
+          title: 'Media Proof API',
           description:
-            'This API allows checking if an image is registered in the SOLANA chain.',
+            'API meediafailide räside turvaliseks salvestamiseks, kontrollimiseks ja Solana plokiahelas allkirjastamiseks.',
         },
       }),
     );
   });
-
 
   fastify.get('/openapi-auth.json', async (_, reply) => {
     const betterAuthDocs = await betterAuth.api.generateOpenAPISchema();
