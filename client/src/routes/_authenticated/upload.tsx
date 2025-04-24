@@ -32,18 +32,16 @@ function Index() {
     setShowChainCheck(true);
 
     try {
-      const existingProof = await trpc.media_proof.byHash.query({ hash });
-
+      const existingProof = await trpc.media_proof.byHash.query({ hash: hashHex });
+  
       if (existingProof) {
         setTxId(existingProof.solana_txid);
         setStatus(`✅ Leitud lokaalselt!
-TX ID: ${existingProof.solana_txid}
-Aeg: ${existingProof.created_at}
-Soovid kontrollida ka plokiahelast?`);
+  TX ID: ${existingProof.solana_txid}
+  Aeg: ${existingProof.created_at}
+  Soovid kontrollida ka plokiahelast?`);
       } else {
-        setStatus(
-          '❌ Ei leitud lokaalselt.',
-        );
+        setStatus('❌ Ei leitud lokaalselt.');
         setShowButton(true);
         setSaveable(true);
         setShowChainCheck(false);
