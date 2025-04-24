@@ -37,6 +37,8 @@ export const addMediaProofHandler = protectedProcedure
       method: 'POST',
       path: '/media-proof/add',
       summary: 'Lisa uus kirje.',
+      description: 'Salvestab metaandmed andmebaasi.',
+      tags: ['Meediatõendid'],
     },
   })
   .input(MediaProofBase)

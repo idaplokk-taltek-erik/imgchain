@@ -19,6 +19,7 @@ for (const [name, procedureUntyped] of toProcess) {
     [method]: {
       summary: `tRPC procedure: ${name}`,
       operationId: name,
+      tags: ['MediaProof'],
       ...(method === 'post'
         ? {
             requestBody:
