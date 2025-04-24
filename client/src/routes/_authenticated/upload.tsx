@@ -1,5 +1,4 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-
 import { ChangeEvent, useState } from 'react';
 import { checkMemoViaWeb3Devnet_TX_ID } from '../../lib/checkMemoViaWeb3Devnet_by_tx_id';
 import { generateSHA256Hash } from '../../lib/getHash';
@@ -137,7 +136,7 @@ Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleS
         mime_type: fileToSave.type,
       });
       setStatus('✅ Salvestatud lokaalselt. Pildi üleslaadimine...');
-      /* const formData = new FormData();
+      const formData = new FormData();
       formData.append('file', fileToSave);
 
       const fileUploadResponse = await fetch(`/api/upload/${hash}`, {
@@ -148,7 +147,7 @@ Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleS
         throw new Error('File upload failed');
       }
 
-      setStatus('✅ Pilt salvestatud. Edasi suunamine...'); */ // Hetkel hea meelega ei salvestaks faile. See tekitab probleemi, et fail olemas, aga tegelikult ei ole plokiahelas.
+      setStatus('✅ Pilt salvestatud. Edasi suunamine...'); // Selle võib välja kommenteerida. See võib tekitada probleemi, et fail olemas, aga tegelikult ei ole plokiahelas. Ühtlasi ei ole kindel, kui jätkusuutlik on kõiki faile salvestada.
       navigate({
         to: '/send/$hash',
         params: {

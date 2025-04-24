@@ -63,9 +63,10 @@ for (const [name, procedureUntyped] of toProcess) {
 export const openApiDocsTRPC = createDocument({
   openapi: '3.1.0',
   info: {
-    title: 'tRPC with OpenAPI',
+    title: 'Media Proof API',
     version: '1.0.0',
-    description: 'OpenAPI documentation for tRPC endpoints.',
+    description:
+      'API meediafailide räside turvaliseks salvestamiseks, kontrollimiseks ja Solana plokiahelas allkirjastamiseks.',
   },
   paths,
 });

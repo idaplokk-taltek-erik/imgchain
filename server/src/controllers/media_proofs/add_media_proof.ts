@@ -32,6 +32,13 @@ const insertFn = async ({
 
 // Reactis kasutamiseks (tavaline protectedProcedure)
 export const addMediaProofHandler = protectedProcedure
+.meta({
+    openapi: {
+      method: 'POST',
+      path: '/media-proof/add',
+      summary: 'Lisa uus kirje.',
+    },
+  })
   .input(MediaProofBase)
   .output(z.object({ success: z.boolean() }))
   .mutation(insertFn);
