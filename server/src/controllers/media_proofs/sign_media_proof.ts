@@ -1,11 +1,3 @@
-import { z } from 'zod';
-import { db } from '../../db/db';
-import { env } from '../../lib/env';
-import { TRPCError } from '@trpc/server';
-import {
-  protectedProcedure,
-  protectedOpenApiProcedure,
-} from '../../lib/trpc/trpc';
 import {
   Connection,
   Keypair,
@@ -13,6 +5,14 @@ import {
   Transaction,
   TransactionInstruction,
 } from '@solana/web3.js';
+import { TRPCError } from '@trpc/server';
+import { z } from 'zod';
+import { db } from '../../db/db';
+import { env } from '../../lib/env';
+import {
+  protectedOpenApiProcedure,
+  protectedProcedure,
+} from '../../lib/trpc/trpc';
 import { MediaProof } from '../../schema/media_proof';
 
 const connection = new Connection(env.SOLANA_RPC_URL, 'confirmed');
@@ -59,23 +59,12 @@ const signAndStore = async ({ input }: { input: { hash: string } }) => {
 
 // Reactis kasutamiseks (tavaline protectedProcedure)
 export const signMediaProofHandler = protectedProcedure
-  .input(inputSchema)
-  .output(MediaProof)
-  .query(signAndStore);
-
-// Swagger UI jaoks (POST + OpenAPI meta)
-export const signMediaProofOpenApiHandler = protectedOpenApiProcedure
   .meta({
-    openapi: {
-      method: 'POST',
-      path: '/media-proof/sign',
-      summary: 'Salvesta pildi tehingu id.',
-      tags: ['media_proof'],
-    },
+    description: 'Salvesta pildi tehingu id.',
   })
   .input(inputSchema)
   .output(MediaProof)
-  .mutation(signAndStore);
+  .query(signAndStore);
 
 export async function signHashInSolana(hash: string): Promise<string> {
   const memoString = `MediaProof:${hash}`;

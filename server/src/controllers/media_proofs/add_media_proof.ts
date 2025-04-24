@@ -1,12 +1,9 @@
+import { ulid } from 'ulid';
 import { z } from 'zod';
 import { db } from '../../db/db';
-import { MediaProofBase } from '../../schema/media_proof';
-import { ulid } from 'ulid';
 import { env } from '../../lib/env';
-import {
-  protectedProcedure,
-  protectedOpenApiProcedure,
-} from '../../lib/trpc/trpc';
+import { protectedProcedure } from '../../lib/trpc/trpc';
+import { MediaProofBase } from '../../schema/media_proof';
 
 // Ühine funktsioon mõlemale handlerile
 const insertFn = async ({
@@ -24,7 +21,7 @@ const insertFn = async ({
       author_id: ctx.user.id,
       solana_signer: env.SOLANA_SIGNER_PUBLIC_KEY,
     })
-    .onConflict(col => col.doNothing())
+    .onConflict((col) => col.doNothing())
     .execute();
 
   return { success: true };
@@ -32,29 +29,7 @@ const insertFn = async ({
 
 // Reactis kasutamiseks (tavaline protectedProcedure)
 export const addMediaProofHandler = protectedProcedure
-.meta({
-    openapi: {
-      method: 'POST',
-      path: '/media-proof/add',
-      summary: 'Lisa uus kirje.',
-      description: 'Salvestab metaandmed andmebaasi.',
-      tags: ['Meediatõendid'],
-    },
-  })
+  .meta({ description: 'Lisab uue kirje.' })
   .input(MediaProofBase)
   .output(z.object({ success: z.boolean() }))
   .mutation(insertFn);
-
-/* // Swagger UI jaoks (POST + OpenAPI meta)
-export const addMediaProofOpenApiHandler = protectedOpenApiProcedure
-  .meta({
-    openapi: {
-      method: 'POST',
-      path: '/media-proof/add',
-      summary: 'Lisa esialgsed andmed andmebaasi.',
-      tags: ['media_proof'],
-    },
-  })
-  .input(MediaProofBase)
-  .output(z.object({ success: z.boolean() }))
-  .mutation(insertFn); */

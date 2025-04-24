@@ -10,7 +10,7 @@ export const Route = createFileRoute('/')({
 });
 
 function LatestUploadsComponent() {
-  const images = trpcHooks.media_proof.all.useQuery();
+  const images = trpcHooks.media_proof.list.useQuery();
   const gridChunks = useMemo(() => {
     if (!images.data) return [];
 

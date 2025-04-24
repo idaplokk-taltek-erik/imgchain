@@ -1,10 +1,10 @@
 import { initTRPC, TRPCError } from '@trpc/server';
 import { RequestContext } from './context';
-import { OpenApiMeta } from 'trpc-openapi';
+import { TRPCPanelMeta } from "trpc-ui";
 
 const t = initTRPC
   .context<RequestContext>()
-  .meta<OpenApiMeta>()
+  .meta<TRPCPanelMeta>()
   .create();
 
 export const router = t.router;
