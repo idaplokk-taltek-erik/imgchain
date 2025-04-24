@@ -59,8 +59,6 @@ function Index() {
     );
 
     try {
-      console.log('Kontrollin Devnet tehingut:', txId);
-      console.log('Otsin räsi:', hash);
       const chain = await checkMemoViaWeb3Devnet_TX_ID(txId, hash);
       if (chain.found) {
         setStatus(

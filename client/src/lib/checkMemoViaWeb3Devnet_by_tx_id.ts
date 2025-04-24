@@ -29,7 +29,7 @@ export async function checkMemoViaWeb3Devnet_TX_ID(signature, hash) {
             const memoBytes = bs58.decode(rawData);
             const memoText = new TextDecoder().decode(memoBytes);
 
-            console.log(`Memo sisu: ${memoText}`);
+            console.log(`Leitud memo sisu: ${memoText}`);
 
             if (memoText === expectedMemo) {
               return {

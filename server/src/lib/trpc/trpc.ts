@@ -1,10 +1,16 @@
 import { initTRPC, TRPCError } from '@trpc/server';
 import { RequestContext } from './context';
+import { OpenApiMeta } from 'trpc-openapi';
 
-const t = initTRPC.context<RequestContext>().create();
+const t = initTRPC
+  .context<RequestContext>()
+  .meta<OpenApiMeta>()
+  .create();
 
 export const router = t.router;
 export const publicProcedure = t.procedure;
+export const openApiProcedure = t.procedure;
+
 export const protectedProcedure = t.procedure.use(
   async function isAuthed(opts) {
     const { ctx } = opts;
@@ -23,3 +29,18 @@ export const protectedProcedure = t.procedure.use(
     });
   },
 );
+
+export const protectedOpenApiProcedure = openApiProcedure.use(async function isAuthed(opts) {
+  const { ctx } = opts;
+
+  if (!ctx.user || !ctx.session || ctx.session.expiresAt < new Date()) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  return opts.next({
+    ctx: {
+      user: ctx.user,
+      session: ctx.session,
+    },
+  });
+});
