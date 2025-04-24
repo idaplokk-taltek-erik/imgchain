@@ -1,8 +1,11 @@
 import { z } from 'zod';
 import { db } from '../../db/db';
 import { env } from '../../lib/env';
-import { protectedProcedure } from '../../lib/trpc/trpc';
-
+import { TRPCError } from '@trpc/server';
+import {
+  protectedProcedure,
+  protectedOpenApiProcedure,
+} from '../../lib/trpc/trpc';
 import {
   Connection,
   Keypair,
@@ -10,7 +13,6 @@ import {
   Transaction,
   TransactionInstruction,
 } from '@solana/web3.js';
-import { TRPCError } from '@trpc/server';
 import { MediaProof } from '../../schema/media_proof';
 
 const connection = new Connection(env.SOLANA_RPC_URL, 'confirmed');
@@ -20,43 +22,60 @@ const fromKeypair = Keypair.fromSecretKey(
 );
 const publicKey = fromKeypair.publicKey;
 
-export const signMediaProofHandler = protectedProcedure
-  .input(z.object({ hash: z.string() }))
-  .output(MediaProof)
+const inputSchema = z.object({ hash: z.string() });
 
-  .query(async ({ ctx, input }) => {
-    const mediaProof = await db
-      .selectFrom('media_proofs')
-      .selectAll()
+// Ühine funktsioon mõlemale handlerile
+const signAndStore = async ({ input }: { input: { hash: string } }) => {
+  const mediaProof = await db
+    .selectFrom('media_proofs')
+    .selectAll()
+    .where('hash', '=', input.hash)
+    .executeTakeFirst();
+
+  if (!mediaProof) {
+    throw new TRPCError({
+      message: 'Ei eksisteeri sellist pilti/andmeid.',
+      code: 'BAD_REQUEST',
+    });
+  }
+
+  try {
+    const solana_txid = await signHashInSolana(input.hash);
+    const result = await db
+      .updateTable('media_proofs')
+      .set({ solana_txid })
       .where('hash', '=', input.hash)
+      .returningAll()
       .executeTakeFirst();
 
-    if (!mediaProof) {
-      throw new TRPCError({
-        message: 'Media proof does not exist',
-        code: 'BAD_REQUEST',
-      });
-    }
+    return result!;
+  } catch (err: unknown) {
+    throw new TRPCError({
+      message: err instanceof Error ? err.message : `${err}`,
+      code: 'INTERNAL_SERVER_ERROR',
+    });
+  }
+};
 
-    try {
-      const solana_txid = await signHashInSolana(input.hash);
-      const result = await db
-        .updateTable('media_proofs')
-        .set({
-          solana_txid,
-        })
-        .where('hash', '=', input.hash)
-        .returningAll()
-        .executeTakeFirst();
+// Reactis kasutamiseks (tavaline protectedProcedure)
+export const signMediaProofHandler = protectedProcedure
+  .input(inputSchema)
+  .output(MediaProof)
+  .query(signAndStore);
 
-      return result!;
-    } catch (err: unknown) {
-      throw new TRPCError({
-        message: err instanceof Error ? err.message : `${err}`,
-        code: 'INTERNAL_SERVER_ERROR',
-      });
-    }
-  });
+// Swagger UI jaoks (POST + OpenAPI meta)
+export const signMediaProofOpenApiHandler = protectedOpenApiProcedure
+  .meta({
+    openapi: {
+      method: 'POST',
+      path: '/media-proof/sign',
+      summary: 'Salvesta pildi tehingu id.',
+      tags: ['media_proof'],
+    },
+  })
+  .input(inputSchema)
+  .output(MediaProof)
+  .mutation(signAndStore);
 
 export async function signHashInSolana(hash: string): Promise<string> {
   const memoString = `MediaProof:${hash}`;
