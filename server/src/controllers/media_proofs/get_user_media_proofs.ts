@@ -1,21 +1,24 @@
 import { z } from 'zod';
 import { db } from '../../db/db';
-import { protectedProcedure } from '../../lib/trpc/trpc';
+import { adminProcedure } from '../../lib/trpc/trpc';
 import { MediaProof } from '../../schema/media_proof';
 
-// Ühine funktsioon mõlemale handlerile
-const queryFn = async ({ ctx }: { ctx: any }) => {
-  return await db
-    .selectFrom('media_proofs')
-    .selectAll()
-    .where('author_id', '=', ctx.user.id)
-    .execute();
-};
-
-// Reactis kasutamiseks (tavaline protectedProcedure)
-export const getUserMediaProofsQueryHandler = protectedProcedure
+export const getMediaProofsByAuthorQueryHandler = adminProcedure
   .meta({
-    description: 'Sisse logitud kasutaja alusel otsimine.',
+    description: 'Kasutaja alusel otsimine. Ligipääs nõuab privileege!',
   })
+  .input(
+    z
+      .string()
+      .describe(
+        'author_id, e.g. user@user.ee (EuOelwL92zwfw3sRbCswRH5Q0Zhasiyk) admin@admin.ee (ipK9W8smUti9Ei4SaIL5QsP2gk4t4c7a)',
+      ),
+  )
   .output(z.array(MediaProof))
-  .query(queryFn);
+  .query(async ({ ctx, input }) => {
+    return await db
+      .selectFrom('media_proofs')
+      .selectAll()
+      .where('author_id', '=', input)
+      .execute();
+  });
