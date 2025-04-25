@@ -30,6 +30,16 @@ export const protectedProcedure = t.procedure.use(
   },
 );
 
+export const adminProcedure = protectedProcedure.use(
+  async function isAdmin({ ctx, next }) {
+    if (ctx.user.role !== 'admin') {
+      throw new TRPCError({ message: 'Forbidden', code: 'FORBIDDEN' });
+    }
+
+    return next();
+  },
+);
+
 export const protectedOpenApiProcedure = openApiProcedure.use(async function isAuthed(opts) {
   const { ctx } = opts;
 

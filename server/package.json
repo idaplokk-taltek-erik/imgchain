@@ -12,7 +12,9 @@
     "db:migrate": "tsx ./src/db/migrate.ts && npm run db:schema",
     "codegen": "npm run build && npm run trpc:copy && npm run zod:copy",
     "zod:copy": "rsync -avm --include='*' --include='*/' --exclude='*' ./dist/schema/ ../client/src/types/",
-    "trpc:copy": "rsync -avm --include='router.*' --include='*/' --exclude='*' ./dist/api_trpc/ ../client/src/types/"
+    "trpc:copy": "rsync -avm --include='router.*' --include='*/' --exclude='*' ./dist/api_trpc/ ../client/src/types/",
+
+    "script:adminuser": "tsx ./src/scripts/create_admin_user.ts"
   },
   "keywords": [],
   "author": "Erik Schults",

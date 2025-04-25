@@ -3,7 +3,12 @@ import { z } from 'zod';
 import { publicProcedure } from '../lib/trpc/trpc';
 
 export const loginHandler = publicProcedure
-  .input(z.object({ email: z.string(), password: z.string() }))
+  .input(
+    z.object({
+      email: z.string().describe('user@user.ee OR admin@admin.ee'),
+      password: z.string().describe('12341234'),
+    }),
+  )
   .output(z.null())
   .mutation(async ({ ctx, input }) => {
     const response = await fetch(
