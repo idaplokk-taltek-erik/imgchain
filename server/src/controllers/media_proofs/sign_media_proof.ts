@@ -38,7 +38,12 @@ const signAndStore = async ({ input }: { input: { hash: string } }) => {
       code: 'BAD_REQUEST',
     });
   }
-
+  if (mediaProof.solana_txid) {
+    throw new TRPCError({
+      message: 'See pilt on juba registreeritud.',
+      code: 'BAD_REQUEST',
+    });
+  }
   try {
     const solana_txid = await signHashInSolana(input.hash);
     const result = await db
