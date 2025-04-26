@@ -11,7 +11,7 @@ export const getMediaProofsByAuthorQueryHandler = adminProcedure
     z
       .string()
       .describe(
-        'author_id, e.g. user@user.ee (EuOelwL92zwfw3sRbCswRH5Q0Zhasiyk) admin@admin.ee (ipK9W8smUti9Ei4SaIL5QsP2gk4t4c7a)',
+        'author_id, e.g. user@user.ee (EuOelwL92zwfw3sRbCswRH5Q0Zhasiyk); admin@admin.ee (ipK9W8smUti9Ei4SaIL5QsP2gk4t4c7a); test@test.ee (SFKT1ahJ7ZAN41Ay41V9QF5aroRt90du)',
       ),
   )
   .output(z.array(MediaProof))
