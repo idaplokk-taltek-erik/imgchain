@@ -2,9 +2,10 @@ import multipart from '@fastify/multipart';
 import { FastifyInstance } from 'fastify';
 import { mkdir, writeFile } from 'fs/promises';
 import { join } from 'path';
-import { ulid } from 'ulid';
+// import { ulid } from 'ulid'; // ei olnud kasutusek
 import { db } from '../../db/db';
 import { betterAuth } from '../../lib/auth/better_auth';
+import sharp from 'sharp'; // piltide suuruse optimeerimiseks
 
 export function registerUploadImageRoute(server: FastifyInstance) {
   server.register(
@@ -50,14 +51,45 @@ export function registerUploadImageRoute(server: FastifyInstance) {
             if (!data) {
               return reply.code(400).send({ error: 'No file uploaded' });
             }
+            //
 
-            const fileExt = data.filename.split('.').pop() || '';
+            const buffer = await data.toBuffer();
+            const mimeType = data.mimetype || '';
+            let optimizedBuffer: Buffer;
+            let fileExt: string;
+
+            // Automaatne optimeerimine sõltuvalt failitüübist
+            if (mimeType.includes('jpeg') || mimeType.includes('jpg')) {
+              optimizedBuffer = await sharp(buffer)
+                .resize({ width: 1920, withoutEnlargement: true })
+                .jpeg({ quality: 80 })
+                .toBuffer();
+              fileExt = 'jpg';
+            } else if (mimeType.includes('png')) {
+              optimizedBuffer = await sharp(buffer)
+                .resize({ width: 1920, withoutEnlargement: true })
+                .webp({ quality: 80 }) // PNG-d muundame WebP-ks
+                .toBuffer();
+              fileExt = 'webp';
+            } else if (mimeType.includes('webp')) {
+              optimizedBuffer = await sharp(buffer)
+                .resize({ width: 1920, withoutEnlargement: true })
+                .webp({ quality: 80 })
+                .toBuffer();
+              fileExt = 'webp';
+            } else {
+              return reply.code(400).send({ error: 'Unsupported image format' });
+            }
+
+            /* const fileExt = data.filename.split('.').pop() || ''; */ // testiks välja võetud
+            
+            //
             const fileName = `${mediaProof.hash}.${fileExt}`;
-
             const uploadDir = join(process.cwd(), 'uploads');
             await mkdir(uploadDir, { recursive: true });
             const filePath = join(uploadDir, fileName);
-            await writeFile(filePath, await data.toBuffer());
+            
+            await writeFile(filePath, optimizedBuffer); // muudetud
 
             return await db
               .updateTable('media_proofs')
@@ -65,6 +97,7 @@ export function registerUploadImageRoute(server: FastifyInstance) {
               .set({ image_url: `/uploads/${fileName}` })
               .returningAll()
               .executeTakeFirst();
+
           } catch (err) {
             console.error('File upload error:', err);
             return reply.code(500).send({ error: 'Failed to upload file' });

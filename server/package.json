@@ -13,7 +13,6 @@
     "codegen": "npm run build && npm run trpc:copy && npm run zod:copy",
     "zod:copy": "rsync -avm --include='*' --include='*/' --exclude='*' ./dist/schema/ ../client/src/types/",
     "trpc:copy": "rsync -avm --include='router.*' --include='*/' --exclude='*' ./dist/api_trpc/ ../client/src/types/",
-
     "script:adminuser": "tsx ./src/scripts/create_admin_user.ts"
   },
   "keywords": [],
@@ -34,6 +33,7 @@
     "fastify": "^5.2.1",
     "kysely": "^0.27.5",
     "prettier": "^3.5.1",
+    "sharp": "^0.34.1",
     "trpc-ui": "^1.0.15",
     "ulid": "^3.0.0",
     "zod": "^3.24.2",
