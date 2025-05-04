@@ -1,8 +1,10 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useState, useEffect } from 'react';
 import { checkMemoViaWeb3Devnet_TX_ID } from '../../lib/checkMemoViaWeb3Devnet_by_tx_id';
 import { generateSHA256Hash } from '../../lib/getHash';
 import { trpc } from '../../lib/trpc';
+import { checkImageExists } from '../../lib/check_Image_Exists';
+import styles from './upload_module.module.css';
 
 export const Route = createFileRoute('/_authenticated/upload')({
   component: Index,
@@ -15,6 +17,7 @@ export const Route = createFileRoute('/_authenticated/upload')({
 
 function Index() {
   const [hash, setHash] = useState('');
+  const [existingImage, setExistingImage] = useState('');
   const [preview, setPreview] = useState('');
   const [status, setStatus] = useState('');
   const [showButton, setShowButton] = useState(false);
@@ -32,15 +35,21 @@ function Index() {
 
     try {
       const existingProof = await trpc.media_proof.byHash.query({ hash: hashHex });
-  
       if (existingProof) {
         setTxId(existingProof.solana_txid);
         setStatus(`✅ Leitud lokaalselt!
   TX ID: ${existingProof.solana_txid}
   Aeg: ${existingProof.created_at}
   Soovid kontrollida ka plokiahelast?`);
+      const imageUrl = await checkImageExists(hashHex); // Pildi otsimine
+      if (imageUrl) {
+        setExistingImage(imageUrl);
+      } else {
+        setExistingImage('');
+      }
       } else {
         setStatus('❌ Ei leitud lokaalselt.');
+        setExistingImage('')
         setShowButton(true);
         setSaveable(true);
         setShowChainCheck(false);
@@ -50,7 +59,6 @@ function Index() {
       setStatus('❌ Lokaalne kontroll ebaõnnestus!');
     }
   };
-
   const checkChain = async () => {
     setStatus(
       (prev) => `${prev}
@@ -186,12 +194,27 @@ Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleS
       )}
 
       {hash && (
-        <div className="alert alert-info mt-3">
-          <strong>Faili räsikood:</strong>
-          <br />
-          <code>{hash}</code>
+        <div className="alert alert-info d-flex justify-content-between align-items-start mt-3">
+          <div>
+            <strong>Faili räsikood:</strong>
+            <br />
+            <code>{hash}</code>
+          </div>
+          {/* Pildi olemasolul kuvatakse ka meie andmebaasis olev pilt. */}
+          {existingImage && (
+            <div className={`${styles.imageWrapper} ms-3`}>
+              <img
+                src={existingImage}
+                alt="Olemasolev pilt"
+                className="rounded shadow-sm img-thumbnail"
+              />
+            </div>
+          )}
         </div>
       )}
+      {
+
+      }
 
       {status && <pre>{status}</pre>}
 

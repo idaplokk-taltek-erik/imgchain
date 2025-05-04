@@ -1,0 +1,20 @@
+.imageWrapper {
+  display: inline-block;
+  max-width: 100px;
+  cursor: zoom-in;
+  transition: transform 0.3s ease-in-out;
+}
+
+.imageWrapper img {
+  width: 100%;
+  height: auto;
+  transition: transform 0.3s ease-in-out;
+  display: block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.imageWrapper:hover img {
+  transform: scale(2.5);
+  z-index: 10;
+}
