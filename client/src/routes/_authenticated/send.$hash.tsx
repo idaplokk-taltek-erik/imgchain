@@ -24,25 +24,25 @@ function RouteComponent() {
 
   return (
     <div className="card p-4 shadow">
-      <h4>Tehingu staatuse kontroll</h4>
-      {!hash && <p>Hash puudub</p>}
-      {signQuery.isPending && <p>Saadan hash'i Solana võrku...</p>}
-      {signQuery.error  && <p>Saatmine ebaõnnestus! {signQuery.error.message}</p>}
+      <h4>Transaction status check</h4>
+      {!hash && <p>Hash missing</p>}
+      {signQuery.isPending && <p>Sending hash to Solana network...</p>}
+      {signQuery.error  && <p>Failed to send! {signQuery.error.message}</p>}
       {signQuery.isSuccess && (
         <>
-          <p>Kõik salvestatud: räsikood + plokiahela signatuur!</p>
+          <p>All saved: hash + blockchain signature!</p>
           <p>
-            <strong>Tehingu ID:</strong> {signQuery.data.solana_txid}
+            <strong>Transaction ID:</strong> {signQuery.data.solana_txid}
           </p>
           <p>
-            <strong>Memo sisu:</strong> {`MediaProof:${hash}`}
+            <strong>Memo content:</strong> {`MediaProof:${hash}`}
           </p>
         </>
       )}
       {hash && (
         <Flex vertical>
           <p>
-            <strong>Pildi räsikood:</strong> {hash}
+            <strong>Hash of the image:</strong> {hash}
           </p>
           <img width="200px" src={mediaProofQuery.data?.image_url ?? ''} />
         </Flex>
@@ -55,7 +55,7 @@ function RouteComponent() {
           })
         }
       >
-        Tagasi
+        Back
       </button>
     </div>
   );

@@ -32,7 +32,7 @@ function Index() {
   const { isDarkMode } = useTheme();
 
   const checkLocal = async (hashHex: string) => {
-    setStatus(`🔍 Kontrollin lokaalselt: ${hashHex}`);
+    setStatus(`🔍 Checking locally: ${hashHex}`);
     setShowButton(false);
     setShowChainCheck(true);
 
@@ -40,10 +40,10 @@ function Index() {
       const existingProof = await trpc.media_proof.byHash.query({ hash: hashHex });
       if (existingProof) {
         setTxId(existingProof.solana_txid);
-        setStatus(`✅ Leitud lokaalselt!
+        setStatus(`✅ Found in local database!
   TX ID: ${existingProof.solana_txid}
-  Aeg: ${existingProof.created_at}
-  Soovid kontrollida ka plokiahelast?`);
+  Time (local): ${existingProof.created_at}
+  Do You want to check from the blockchain?`);
       const imageUrl = await checkImageExists(hashHex); // Pildi otsimine
       if (imageUrl) {
         setExistingImage(imageUrl);
@@ -51,7 +51,7 @@ function Index() {
         setExistingImage('');
       }
       } else {
-        setStatus('❌ Ei leitud lokaalselt.');
+        setStatus('❌ Was not found from local database.');
         setExistingImage('')
         setShowButton(true);
         setSaveable(true);
@@ -59,13 +59,13 @@ function Index() {
       }
     } catch (err) {
       console.error(err);
-      setStatus('❌ Lokaalne kontroll ebaõnnestus!');
+      setStatus('❌ Local check failed!');
     }
   };
   const checkChain = async () => {
     setStatus(
       (prev) => `${prev}
-⏳ Kontrollin plokiahelast...`,
+⏳ Checking from the blockchain...`,
     );
 
     try {
@@ -73,28 +73,28 @@ function Index() {
       if (chain.found) {
         setStatus(
           (prev) => `${prev}
-✅ Leitud plokiahelast!
-TX ID: ${chain.signature}
-Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleString()}`,
+✅ Found from the blockchain!
+  TX ID: ${chain.signature}
+  Time (GMT): ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleString()}`,
         );
         setShowChainCheck(true);
       } else if (!saveable) {
         setStatus(
           (prev) => `${prev}
-❌ Räsikoodi ei leitud.`,
+❌ Hash was not found.`,
         );
         setShowButton(false);
       } else if (saveable && fileToSave) {
         setStatus(
           (prev) => `${prev}
-❌ Räsikoodi ei leitud. Võimalik salvestamiseks.`,
+❌ Hash was not found. Registering is possible.`,
         );
       }
     } catch (err) {
       console.error(err);
       setStatus(
         (prev) => `${prev}
-❌ Plokiahela kontroll ebaõnnestus!`,
+❌ Check from the blockchain failed!`,
       );
     } finally {
       setShowChainCheck(false);
@@ -107,7 +107,7 @@ Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleS
     const file = files[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image')) return alert('Palun vali pildifail!');
+    if (!file.type.startsWith('image')) return alert('Only images allowed!');
 
     setFileToSave(file);
 
@@ -126,7 +126,7 @@ Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleS
 
   const handleManualCheck = async () => {
     if (manualHash.length !== 64) {
-      return alert('Hash peab olema 64-kohaline!');
+      return alert('Hash has to be 64-characters!');
     }
     setFileToSave(null);
     setPreview('');
@@ -137,7 +137,7 @@ Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleS
   };
 
   const handleSaveAndSend = async () => {
-    if (!fileToSave || !hash || !saveable) return alert('Viga: puudub fail.');
+    if (!fileToSave || !hash || !saveable) return alert('Error: File is missing.');
 
     try {
       await trpc.media_proof.add.mutate({
@@ -146,7 +146,7 @@ Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleS
         file_size: fileToSave.size,
         mime_type: fileToSave.type,
       });
-      setStatus('✅ Salvestatud lokaalselt. Pildi üleslaadimine...');
+      setStatus('✅ Saved to the local database. Uploading image...');
       const formData = new FormData();
       formData.append('file', fileToSave);
 
@@ -158,7 +158,7 @@ Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleS
         throw new Error('File upload failed');
       }
 
-      setStatus('✅ Pilt salvestatud. Edasi suunamine...'); // Selle võib välja kommenteerida. See võib tekitada probleemi, et fail olemas, aga tegelikult ei ole plokiahelas. Ühtlasi ei ole kindel, kui jätkusuutlik on kõiki faile salvestada.
+      setStatus('✅ Image saved. Redirecting...'); // Selle võib välja kommenteerida. See võib tekitada probleemi, et fail olemas, aga tegelikult ei ole plokiahelas. Ühtlasi ei ole kindel, kui jätkusuutlik on kõiki faile salvestada.
       navigate({
         to: '/send/$hash',
         params: {
@@ -167,7 +167,7 @@ Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleS
       });
     } catch (err) {
       console.error(err);
-      setStatus('❌ Salvestamine ebaõnnestus!');
+      setStatus('❌ Failed to save!');
     }
   };
 
@@ -189,12 +189,12 @@ Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleS
         <input
           type="text"
           className="form-control"
-          placeholder="Sisesta hash käsitsi"
+          placeholder="Input hash manually"
           value={manualHash}
           onChange={(e) => setManualHash(e.target.value.trim())}
         />
         <button className="btn btn-outline-primary" onClick={handleManualCheck}>
-          Kontrolli
+          Check
         </button>
       </div>
 
@@ -211,7 +211,7 @@ Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleS
       backgroundColor: isDarkMode ? '#1f1f1f' : '#ffffff',
       color: isDarkMode ? '#f0f0f0' : '#000000',
     }}>
-            <strong>Faili räsikood:</strong>
+            <strong>Hash of the image:</strong>
             <br />
             <code>{hash}</code>
           </div>
@@ -235,13 +235,13 @@ Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleS
 
       {showChainCheck && (
         <button className="btn btn-outline-secondary mt-2" onClick={checkChain}>
-          Kontrolli plokiahelast
+          Check from the blockchain
         </button>
       )}
 
       {showButton && saveable && (
         <button className="btn btn-primary mt-3" onClick={handleSaveAndSend}>
-          ➕ Lisa plokiahelasse ja salvesta
+          ➕ Add to the blockchain and save
         </button>
       )}
     </div>
