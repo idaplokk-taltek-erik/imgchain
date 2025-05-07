@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { Flex } from 'antd';
 import { trpcHooks } from '../../lib/trpc';
-import { useTheme } from '../../lib/theme/hook';
+import { useTheme } from '../../lib/theme/hook'; 
 
 export const Route = createFileRoute('/_authenticated/send/$hash')({
   component: RouteComponent,
