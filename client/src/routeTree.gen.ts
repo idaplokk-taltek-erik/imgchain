@@ -11,14 +11,22 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as AdminImport } from './routes/admin'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
+import { Route as AdminDashboardImport } from './routes/admin/dashboard'
 import { Route as AuthenticatedUploadImport } from './routes/_authenticated/upload'
 import { Route as AuthenticatedUploadTestIndexImport } from './routes/_authenticated/upload-test/index'
 import { Route as AuthenticatedProfileIndexImport } from './routes/_authenticated/profile/index'
 import { Route as AuthenticatedSendHashImport } from './routes/_authenticated/send.$hash'
 
 // Create/Update Routes
+
+const AdminRoute = AdminImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const AuthenticatedRoute = AuthenticatedImport.update({
   id: '/_authenticated',
@@ -29,6 +37,12 @@ const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const AdminDashboardRoute = AdminDashboardImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AdminRoute,
 } as any)
 
 const AuthenticatedUploadRoute = AuthenticatedUploadImport.update({
@@ -74,12 +88,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedImport
       parentRoute: typeof rootRoute
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminImport
+      parentRoute: typeof rootRoute
+    }
     '/_authenticated/upload': {
       id: '/_authenticated/upload'
       path: '/upload'
       fullPath: '/upload'
       preLoaderRoute: typeof AuthenticatedUploadImport
       parentRoute: typeof AuthenticatedImport
+    }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardImport
+      parentRoute: typeof AdminImport
     }
     '/_authenticated/send/$hash': {
       id: '/_authenticated/send/$hash'
@@ -125,10 +153,22 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface AdminRouteChildren {
+  AdminDashboardRoute: typeof AdminDashboardRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminDashboardRoute: AdminDashboardRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
+  '/admin': typeof AdminRouteWithChildren
   '/upload': typeof AuthenticatedUploadRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/send/$hash': typeof AuthenticatedSendHashRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
   '/upload-test': typeof AuthenticatedUploadTestIndexRoute
@@ -137,7 +177,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof AuthenticatedRouteWithChildren
+  '/admin': typeof AdminRouteWithChildren
   '/upload': typeof AuthenticatedUploadRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/send/$hash': typeof AuthenticatedSendHashRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
   '/upload-test': typeof AuthenticatedUploadTestIndexRoute
@@ -147,7 +189,9 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/admin': typeof AdminRouteWithChildren
   '/_authenticated/upload': typeof AuthenticatedUploadRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/_authenticated/send/$hash': typeof AuthenticatedSendHashRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
   '/_authenticated/upload-test/': typeof AuthenticatedUploadTestIndexRoute
@@ -155,14 +199,32 @@ export interface FileRoutesById {
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '' | '/upload' | '/send/$hash' | '/profile' | '/upload-test'
+  fullPaths:
+    | '/'
+    | ''
+    | '/admin'
+    | '/upload'
+    | '/admin/dashboard'
+    | '/send/$hash'
+    | '/profile'
+    | '/upload-test'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/upload' | '/send/$hash' | '/profile' | '/upload-test'
+  to:
+    | '/'
+    | ''
+    | '/admin'
+    | '/upload'
+    | '/admin/dashboard'
+    | '/send/$hash'
+    | '/profile'
+    | '/upload-test'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/admin'
     | '/_authenticated/upload'
+    | '/admin/dashboard'
     | '/_authenticated/send/$hash'
     | '/_authenticated/profile/'
     | '/_authenticated/upload-test/'
@@ -172,11 +234,13 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AdminRoute: typeof AdminRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AdminRoute: AdminRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -190,7 +254,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/_authenticated"
+        "/_authenticated",
+        "/admin"
       ]
     },
     "/": {
@@ -205,9 +270,19 @@ export const routeTree = rootRoute
         "/_authenticated/upload-test/"
       ]
     },
+    "/admin": {
+      "filePath": "admin.tsx",
+      "children": [
+        "/admin/dashboard"
+      ]
+    },
     "/_authenticated/upload": {
       "filePath": "_authenticated/upload.tsx",
       "parent": "/_authenticated"
+    },
+    "/admin/dashboard": {
+      "filePath": "admin/dashboard.tsx",
+      "parent": "/admin"
     },
     "/_authenticated/send/$hash": {
       "filePath": "_authenticated/send.$hash.tsx",

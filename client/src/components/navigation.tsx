@@ -3,9 +3,9 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UploadOutlined,
-  FileImageOutlined,
   NotificationOutlined,
+  SettingOutlined,
+  UploadOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import { Link, useNavigate } from '@tanstack/react-router';
@@ -68,11 +68,13 @@ export function Navigation() {
               src={session.data?.user.image}
             />
             <Typography style={{ marginTop: 8 }}>
-              <Text strong>
-                {session.data?.user?.name ||
-                  session.data?.user?.email ||
-                  'User'}
-              </Text>
+              <Link to="/profile">
+                <Text strong>
+                  {session.data?.user?.name ||
+                    session.data?.user?.email ||
+                    'User'}
+                </Text>
+              </Link>
             </Typography>
           </>
         )}
@@ -92,7 +94,6 @@ export function Navigation() {
 
       <Menu
         mode="inline"
-        defaultSelectedKeys={['home']}
         items={[
           {
             key: 'home',
@@ -104,7 +105,7 @@ export function Navigation() {
             icon: <UploadOutlined />,
             label: <Link to="/upload">Upload and Check</Link>,
           },
-/*           {
+          /*           {
             key: 'upload-test',
             icon: <UploadOutlined />,
             label: <Link to="/upload-test">Upload-test</Link>,
@@ -114,6 +115,15 @@ export function Navigation() {
             icon: <UserOutlined />,
             label: <Link to="/profile">Profile</Link>,
           },
+          ...(session.data?.user.role === 'admin'
+            ? [
+                {
+                  key: 'admin_dashboard',
+                  icon: <SettingOutlined />,
+                  label: <Link to="/admin/dashboard">Admin</Link>,
+                },
+              ]
+            : []),
         ]}
       />
 
