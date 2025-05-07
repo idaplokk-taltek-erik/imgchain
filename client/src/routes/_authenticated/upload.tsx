@@ -6,6 +6,8 @@ import { trpc } from '../../lib/trpc';
 import { checkImageExists } from '../../lib/check_Image_Exists';
 import styles from './upload_module.module.css';
 
+import { useTheme } from '../../lib/theme/hook';
+
 export const Route = createFileRoute('/_authenticated/upload')({
   component: Index,
   // beforeLoad(ctx) {
@@ -27,6 +29,7 @@ function Index() {
   const navigate = useNavigate({ from: '/' });
   const [saveable, setSaveable] = useState(false); // eesmärk võimaldada ainult pildi üleslaadimisel salvestamine
   const [txId, setTxId] = useState(null);
+  const { isDarkMode } = useTheme();
 
   const checkLocal = async (hashHex: string) => {
     setStatus(`🔍 Kontrollin lokaalselt: ${hashHex}`);
@@ -169,14 +172,20 @@ Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleS
   };
 
   return (
-    <div className="card p-4 shadow-sm">
+    <div className="card p-4 shadow-sm" style={{
+      backgroundColor: isDarkMode ? '#1f1f1f' : '#ffffff',
+      color: isDarkMode ? '#f0f0f0' : '#000000',
+    }}>
       <input
         type="file"
         className="form-control mb-3"
         onChange={handleFileChange}
       />
 
-      <div className="input-group mb-3">
+      <div className="input-group mb-3" style={{
+      backgroundColor: isDarkMode ? '#1f1f1f' : '#ffffff',
+      color: isDarkMode ? '#f0f0f0' : '#000000',
+    }}>
         <input
           type="text"
           className="form-control"
@@ -194,8 +203,14 @@ Aeg: ${new Date(chain.timestamp ? chain.timestamp * 1000 : new Date()).toLocaleS
       )}
 
       {hash && (
-        <div className="alert alert-info d-flex justify-content-between align-items-start mt-3">
-          <div>
+        <div className="alert alert-info d-flex justify-content-between align-items-start mt-3" style={{
+          backgroundColor: isDarkMode ? '#1f1f1f' : '#ffffff',
+          color: isDarkMode ? '#f0f0f0' : '#000000',
+        }}>
+          <div style={{
+      backgroundColor: isDarkMode ? '#1f1f1f' : '#ffffff',
+      color: isDarkMode ? '#f0f0f0' : '#000000',
+    }}>
             <strong>Faili räsikood:</strong>
             <br />
             <code>{hash}</code>

@@ -104,11 +104,11 @@ export function Navigation() {
             icon: <UploadOutlined />,
             label: <Link to="/upload">Upload</Link>,
           },
-          {
+/*           {
             key: 'upload-test',
             icon: <UploadOutlined />,
             label: <Link to="/upload-test">Upload-test</Link>,
-          },
+          }, */ // Antud funktsionaalsust hetkel ei ole (mite faili üheaegne kontroll/registreerimine)
           {
             key: 'profile',
             icon: <UserOutlined />,
