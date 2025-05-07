@@ -102,7 +102,7 @@ export function Navigation() {
           {
             key: 'upload',
             icon: <UploadOutlined />,
-            label: <Link to="/upload">Upload</Link>,
+            label: <Link to="/upload">Upload and Check</Link>,
           },
 /*           {
             key: 'upload-test',
