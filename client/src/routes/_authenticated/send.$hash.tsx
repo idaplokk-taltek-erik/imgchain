@@ -1,12 +1,14 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { Flex } from 'antd';
 import { trpcHooks } from '../../lib/trpc';
+import { useTheme } from '../../lib/theme/hook';
 
 export const Route = createFileRoute('/_authenticated/send/$hash')({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const { isDarkMode } = useTheme();
   const { hash } = Route.useParams();
   const mediaProofQuery = trpcHooks.media_proof.byHash.useQuery({ hash });
   const signQuery = trpcHooks.media_proof.sign.useQuery(
@@ -23,7 +25,10 @@ function RouteComponent() {
   const navigate = useNavigate();
 
   return (
-    <div className="card p-4 shadow">
+    <div className="card p-4 shadow" style={{
+      backgroundColor: isDarkMode ? '#1f1f1f' : '#ffffff',
+      color: isDarkMode ? '#f0f0f0' : '#000000',
+    }}>
       <h4>Transaction status check</h4>
       {!hash && <p>Hash missing</p>}
       {signQuery.isPending && <p>Sending hash to Solana network...</p>}
