@@ -1,9 +1,19 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { Button } from 'react-bootstrap';
 
 export const Route = createFileRoute('/admin/dashboard')({
-  component: RouteComponent,
-})
+  component: DashboardPage,
+});
 
-function RouteComponent() {
-  return <div>Hello "/admin/dashboard"!</div>
+function DashboardPage() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="container mt-5">
+      <h2>Admin Dashboard</h2>
+      <Button onClick={() => navigate({ to: '/admin/media-by-author' })}>
+        Vaata meedia tehinguid
+      </Button>
+    </div>
+  );
 }
