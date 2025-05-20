@@ -4,7 +4,6 @@ import { checkMemoViaWeb3Devnet_TX_ID } from '../../lib/checkMemoViaWeb3Devnet_b
 import { generateSHA256Hash } from '../../lib/getHash';
 import { trpc } from '../../lib/trpc';
 import { checkImageExists } from '../../lib/check_Image_Exists';
-import styles from './upload_module.module.css';
 
 import { useTheme } from '../../lib/theme/hook';
 
@@ -236,17 +235,14 @@ function Index() {
               boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
               transition: 'transform 0.3s ease',
             }}
-            onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
-            onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
           />
-          <small className="text-muted mt-2">Click to open</small>
         </div>
 
         {/* Desktopvaade */}
         <div className="d-none d-md-block mt-3">
           <img
             src={existingImage}
-            alt="Existin image"
+            alt="Existing image"
             onClick={() => window.open(existingImage, '_blank')}
             className="rounded shadow-sm img-thumbnail"
             style={{
@@ -260,7 +256,6 @@ function Index() {
             onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.2)')}
             onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
           />
-          <small className="text-muted">Click to open</small>
         </div>
       </>
     )}

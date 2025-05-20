@@ -2,7 +2,7 @@ import multipart from '@fastify/multipart';
 import { FastifyInstance } from 'fastify';
 import { mkdir, writeFile } from 'fs/promises';
 import { join } from 'path';
-// import { ulid } from 'ulid'; // ei olnud kasutusek
+// import { ulid } from 'ulid'; // ei olnud kasutuses
 import { db } from '../../db/db';
 import { betterAuth } from '../../lib/auth/better_auth';
 import sharp from 'sharp'; // piltide suuruse optimeerimiseks
@@ -62,13 +62,13 @@ export function registerUploadImageRoute(server: FastifyInstance) {
             if (mimeType.includes('jpeg') || mimeType.includes('jpg')) {
               optimizedBuffer = await sharp(buffer)
                 .resize({ width: 1920, withoutEnlargement: true })
-                .jpeg({ quality: 80 })
+                .jpeg({ quality: 80 })  // Kvaliteet on vaikimisi 80%. Teoreetiliselt võime ka allapoole minna, aga see ei pruugi olla vajalik.
                 .toBuffer();
               fileExt = 'jpg';
             } else if (mimeType.includes('png')) {
               optimizedBuffer = await sharp(buffer)
                 .resize({ width: 1920, withoutEnlargement: true })
-                .webp({ quality: 80 }) // PNG-d muundame WebP-ks
+                .webp({ quality: 80 })
                 .toBuffer();
               fileExt = 'webp';
             } else if (mimeType.includes('webp')) {

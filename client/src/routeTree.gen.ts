@@ -15,7 +15,9 @@ import { Route as AdminImport } from './routes/admin'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
 import { Route as AdminUserListImport } from './routes/admin/user-list'
+import { Route as AdminProofsByUserImport } from './routes/admin/proofs-by-user'
 import { Route as AdminDashboardImport } from './routes/admin/dashboard'
+import { Route as AdminBanUserImport } from './routes/admin/ban-user'
 import { Route as AuthenticatedUploadImport } from './routes/_authenticated/upload'
 import { Route as AuthenticatedUploadTestIndexImport } from './routes/_authenticated/upload-test/index'
 import { Route as AuthenticatedProfileIndexImport } from './routes/_authenticated/profile/index'
@@ -46,9 +48,21 @@ const AdminUserListRoute = AdminUserListImport.update({
   getParentRoute: () => AdminRoute,
 } as any)
 
+const AdminProofsByUserRoute = AdminProofsByUserImport.update({
+  id: '/proofs-by-user',
+  path: '/proofs-by-user',
+  getParentRoute: () => AdminRoute,
+} as any)
+
 const AdminDashboardRoute = AdminDashboardImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AdminRoute,
+} as any)
+
+const AdminBanUserRoute = AdminBanUserImport.update({
+  id: '/ban-user',
+  path: '/ban-user',
   getParentRoute: () => AdminRoute,
 } as any)
 
@@ -109,11 +123,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedUploadImport
       parentRoute: typeof AuthenticatedImport
     }
+    '/admin/ban-user': {
+      id: '/admin/ban-user'
+      path: '/ban-user'
+      fullPath: '/admin/ban-user'
+      preLoaderRoute: typeof AdminBanUserImport
+      parentRoute: typeof AdminImport
+    }
     '/admin/dashboard': {
       id: '/admin/dashboard'
       path: '/dashboard'
       fullPath: '/admin/dashboard'
       preLoaderRoute: typeof AdminDashboardImport
+      parentRoute: typeof AdminImport
+    }
+    '/admin/proofs-by-user': {
+      id: '/admin/proofs-by-user'
+      path: '/proofs-by-user'
+      fullPath: '/admin/proofs-by-user'
+      preLoaderRoute: typeof AdminProofsByUserImport
       parentRoute: typeof AdminImport
     }
     '/admin/user-list': {
@@ -168,12 +196,16 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 )
 
 interface AdminRouteChildren {
+  AdminBanUserRoute: typeof AdminBanUserRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminProofsByUserRoute: typeof AdminProofsByUserRoute
   AdminUserListRoute: typeof AdminUserListRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminBanUserRoute: AdminBanUserRoute,
   AdminDashboardRoute: AdminDashboardRoute,
+  AdminProofsByUserRoute: AdminProofsByUserRoute,
   AdminUserListRoute: AdminUserListRoute,
 }
 
@@ -184,7 +216,9 @@ export interface FileRoutesByFullPath {
   '': typeof AuthenticatedRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
   '/upload': typeof AuthenticatedUploadRoute
+  '/admin/ban-user': typeof AdminBanUserRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/proofs-by-user': typeof AdminProofsByUserRoute
   '/admin/user-list': typeof AdminUserListRoute
   '/send/$hash': typeof AuthenticatedSendHashRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
@@ -196,7 +230,9 @@ export interface FileRoutesByTo {
   '': typeof AuthenticatedRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
   '/upload': typeof AuthenticatedUploadRoute
+  '/admin/ban-user': typeof AdminBanUserRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/proofs-by-user': typeof AdminProofsByUserRoute
   '/admin/user-list': typeof AdminUserListRoute
   '/send/$hash': typeof AuthenticatedSendHashRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
@@ -209,7 +245,9 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
   '/_authenticated/upload': typeof AuthenticatedUploadRoute
+  '/admin/ban-user': typeof AdminBanUserRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/proofs-by-user': typeof AdminProofsByUserRoute
   '/admin/user-list': typeof AdminUserListRoute
   '/_authenticated/send/$hash': typeof AuthenticatedSendHashRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
@@ -223,7 +261,9 @@ export interface FileRouteTypes {
     | ''
     | '/admin'
     | '/upload'
+    | '/admin/ban-user'
     | '/admin/dashboard'
+    | '/admin/proofs-by-user'
     | '/admin/user-list'
     | '/send/$hash'
     | '/profile'
@@ -234,7 +274,9 @@ export interface FileRouteTypes {
     | ''
     | '/admin'
     | '/upload'
+    | '/admin/ban-user'
     | '/admin/dashboard'
+    | '/admin/proofs-by-user'
     | '/admin/user-list'
     | '/send/$hash'
     | '/profile'
@@ -245,7 +287,9 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/admin'
     | '/_authenticated/upload'
+    | '/admin/ban-user'
     | '/admin/dashboard'
+    | '/admin/proofs-by-user'
     | '/admin/user-list'
     | '/_authenticated/send/$hash'
     | '/_authenticated/profile/'
@@ -295,7 +339,9 @@ export const routeTree = rootRoute
     "/admin": {
       "filePath": "admin.tsx",
       "children": [
+        "/admin/ban-user",
         "/admin/dashboard",
+        "/admin/proofs-by-user",
         "/admin/user-list"
       ]
     },
@@ -303,12 +349,20 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/upload.tsx",
       "parent": "/_authenticated"
     },
+    "/admin/ban-user": {
+      "filePath": "admin/ban-user.tsx",
+      "parent": "/admin"
+    },
     "/admin/dashboard": {
       "filePath": "admin/dashboard.tsx",
       "parent": "/admin"
     },
+    "/admin/proofs-by-user": {
+      "filePath": "admin/proofs-by-user.tsx",
+      "parent": "/admin"
+    },
     "/admin/user-list": {
-      "filePath": "admin/user-list.jsx",
+      "filePath": "admin/user-list.tsx",
       "parent": "/admin"
     },
     "/_authenticated/send/$hash": {

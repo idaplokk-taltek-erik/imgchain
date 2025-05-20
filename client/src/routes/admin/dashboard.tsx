@@ -12,14 +12,18 @@ function DashboardPage() {
 
   return (
     <div className="container mt-5">
-      <h2>Admin Dashboard</h2>
+      <h2 className="mb-4">Admin Dashboard</h2>
       <Button onClick={() => navigate({ to: '/admin/user-list' })} className="ms-2">
-        Vaata kasutajaid
+        All users
       </Button>
 
-      <Button onClick={() => navigate({ to: '/admin/media-by-author' })} className="ms-2">
-        Vaata meedia tehinguid
+      <Button onClick={() => navigate({ to: '/admin/proofs-by-user' })} className="ms-2">
+        Uploads by user
       </Button>
+
+{/*       <Button onClick={() => navigate({ to: '/admin/ban-user' })} className="ms-2">
+        BAN/UNBAN
+      </Button> */} {/* Ei tööta korrektselt hetkel */}
     </div>
   );
 }
