@@ -203,28 +203,68 @@ function Index() {
       )}
 
       {hash && (
-        <div className="alert alert-info d-flex justify-content-between align-items-start mt-3" style={{
-          backgroundColor: isDarkMode ? '#1f1f1f' : '#ffffff',
-          color: isDarkMode ? '#f0f0f0' : '#000000',
-        }}>
-          <div style={{
+  <div
+    className="alert alert-info d-flex flex-column flex-md-row justify-content-between align-items-start mt-3"
+    style={{
       backgroundColor: isDarkMode ? '#1f1f1f' : '#ffffff',
       color: isDarkMode ? '#f0f0f0' : '#000000',
-    }}>
-            <strong>Hash of the image:</strong>
-            <br />
-            <code>{hash}</code>
-          </div>
-          {/* Pildi olemasolul kuvatakse ka meie andmebaasis olev pilt. */}
-          {existingImage && (
-            <div className={`${styles.imageWrapper} ms-3`}>
-              <img
-                src={existingImage}
-                alt="Olemasolev pilt"
-                className="rounded shadow-sm img-thumbnail"
-              />
-            </div>
-          )}
+      gap: '1rem', // vahe hash ja pildi vahel
+      wordBreak: 'break-word',
+      paddingBottom: '2rem',
+    }}
+  >
+    <div style={{ flex: 1, minWidth: 0}}>
+      <strong>Hash of the image:</strong>
+      <br />
+      <code style={{ wordBreak: 'break-word' }}>{hash}</code>
+    </div>
+
+    {existingImage && (
+      <>
+        {/* Mobiilivaade */}
+        <div className="d-flex flex-column align-items-center d-md-none mt-3">
+          <img
+            src={existingImage}
+            alt="Existing image"
+            onClick={() => window.open(existingImage, '_blank')}
+            className="rounded shadow-sm img-thumbnail"
+            style={{
+              cursor: 'pointer',
+              maxWidth: '250px',
+              width: '100%',
+              height: 'auto',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+              transition: 'transform 0.3s ease',
+            }}
+            onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+            onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+          />
+          <small className="text-muted mt-2">Click to open</small>
+        </div>
+
+        {/* Desktopvaade */}
+        <div className="d-none d-md-block mt-3">
+          <img
+            src={existingImage}
+            alt="Existin image"
+            onClick={() => window.open(existingImage, '_blank')}
+            className="rounded shadow-sm img-thumbnail"
+            style={{
+              cursor: 'pointer',
+              maxWidth: '250px',
+              width: '100%',
+              height: 'auto',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+              transition: 'transform 0.5s ease',
+            }}
+            onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.2)')}
+            onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+          />
+          <small className="text-muted">Click to open</small>
+        </div>
+      </>
+    )}
+
         </div>
       )}
       {

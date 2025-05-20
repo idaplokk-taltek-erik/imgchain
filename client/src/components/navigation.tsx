@@ -18,15 +18,20 @@ import {
   Switch,
   Typography,
 } from 'antd';
-import { useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { signOut, useSession } from '../lib/auth_client';
 import { useTheme } from '../lib/theme/hook';
 
 const { Sider } = Layout;
 const { Text } = Typography;
 
-export function Navigation() {
-  const [collapsed, setCollapsed] = useState(false);
+interface NavigationProps {
+  collapsed: boolean;
+  isMobile: boolean;
+  setCollapsed: Dispatch<SetStateAction<boolean>>;
+}
+
+export function Navigation({ collapsed, setCollapsed, isMobile }: NavigationProps) {
   const session = useSession();
   const navigate = useNavigate();
   const theme = useTheme();
@@ -36,20 +41,18 @@ export function Navigation() {
     navigate({ to: '/upload' });
   };
 
-  const toggleCollapsed = () => {
-    setCollapsed(!collapsed);
-  };
-
   const handleThemeChange = (checked: boolean) => {
     theme.setTheme(checked);
   };
 
   return (
     <Sider
-      collapsible
       collapsed={collapsed}
-      onCollapse={toggleCollapsed}
+      onCollapse={setCollapsed}
+      collapsible
       trigger={null}
+      breakpoint="md"
+      collapsedWidth={isMobile ? 0 : 80}
       theme="light"
       style={{
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.09)',
@@ -57,6 +60,7 @@ export function Navigation() {
         position: 'sticky',
         top: 0,
         left: 0,
+        zIndex: 1000,
       }}
     >
       <div style={{ padding: '16px', textAlign: 'center' }}>
@@ -78,10 +82,12 @@ export function Navigation() {
             </Typography>
           </>
         )}
+
+        {/* Menüü vähendamise/avamise desktopis */}
         <Button
           type="text"
           icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-          onClick={toggleCollapsed}
+          onClick={() => setCollapsed(!collapsed)}
           style={{
             marginTop: collapsed ? 16 : 8,
             marginBottom: 8,
@@ -105,11 +111,6 @@ export function Navigation() {
             icon: <UploadOutlined />,
             label: <Link to="/upload">Upload and Check</Link>,
           },
-          /*           {
-            key: 'upload-test',
-            icon: <UploadOutlined />,
-            label: <Link to="/upload-test">Upload-test</Link>,
-          }, */ // Antud funktsionaalsust hetkel ei ole (mite faili üheaegne kontroll/registreerimine)
           {
             key: 'profile',
             icon: <UserOutlined />,

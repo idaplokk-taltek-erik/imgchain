@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as AdminImport } from './routes/admin'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as IndexImport } from './routes/index'
+import { Route as AdminUserListImport } from './routes/admin/user-list'
 import { Route as AdminDashboardImport } from './routes/admin/dashboard'
 import { Route as AuthenticatedUploadImport } from './routes/_authenticated/upload'
 import { Route as AuthenticatedUploadTestIndexImport } from './routes/_authenticated/upload-test/index'
@@ -37,6 +38,12 @@ const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const AdminUserListRoute = AdminUserListImport.update({
+  id: '/user-list',
+  path: '/user-list',
+  getParentRoute: () => AdminRoute,
 } as any)
 
 const AdminDashboardRoute = AdminDashboardImport.update({
@@ -109,6 +116,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardImport
       parentRoute: typeof AdminImport
     }
+    '/admin/user-list': {
+      id: '/admin/user-list'
+      path: '/user-list'
+      fullPath: '/admin/user-list'
+      preLoaderRoute: typeof AdminUserListImport
+      parentRoute: typeof AdminImport
+    }
     '/_authenticated/send/$hash': {
       id: '/_authenticated/send/$hash'
       path: '/send/$hash'
@@ -155,10 +169,12 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 
 interface AdminRouteChildren {
   AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminUserListRoute: typeof AdminUserListRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminDashboardRoute: AdminDashboardRoute,
+  AdminUserListRoute: AdminUserListRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
@@ -169,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/upload': typeof AuthenticatedUploadRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/user-list': typeof AdminUserListRoute
   '/send/$hash': typeof AuthenticatedSendHashRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
   '/upload-test': typeof AuthenticatedUploadTestIndexRoute
@@ -180,6 +197,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRouteWithChildren
   '/upload': typeof AuthenticatedUploadRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/user-list': typeof AdminUserListRoute
   '/send/$hash': typeof AuthenticatedSendHashRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
   '/upload-test': typeof AuthenticatedUploadTestIndexRoute
@@ -192,6 +210,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/_authenticated/upload': typeof AuthenticatedUploadRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/user-list': typeof AdminUserListRoute
   '/_authenticated/send/$hash': typeof AuthenticatedSendHashRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
   '/_authenticated/upload-test/': typeof AuthenticatedUploadTestIndexRoute
@@ -205,6 +224,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/upload'
     | '/admin/dashboard'
+    | '/admin/user-list'
     | '/send/$hash'
     | '/profile'
     | '/upload-test'
@@ -215,6 +235,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/upload'
     | '/admin/dashboard'
+    | '/admin/user-list'
     | '/send/$hash'
     | '/profile'
     | '/upload-test'
@@ -225,6 +246,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/_authenticated/upload'
     | '/admin/dashboard'
+    | '/admin/user-list'
     | '/_authenticated/send/$hash'
     | '/_authenticated/profile/'
     | '/_authenticated/upload-test/'
@@ -273,7 +295,8 @@ export const routeTree = rootRoute
     "/admin": {
       "filePath": "admin.tsx",
       "children": [
-        "/admin/dashboard"
+        "/admin/dashboard",
+        "/admin/user-list"
       ]
     },
     "/_authenticated/upload": {
@@ -282,6 +305,10 @@ export const routeTree = rootRoute
     },
     "/admin/dashboard": {
       "filePath": "admin/dashboard.tsx",
+      "parent": "/admin"
+    },
+    "/admin/user-list": {
+      "filePath": "admin/user-list.jsx",
       "parent": "/admin"
     },
     "/_authenticated/send/$hash": {
